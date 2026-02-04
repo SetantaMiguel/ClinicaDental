@@ -1,0 +1,17 @@
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\bin\Debug\net9.0\Clinica.Services.deps.json
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\bin\Debug\net9.0\Clinica.Services.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\bin\Debug\net9.0\Clinica.Services.pdb
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\bin\Debug\net9.0\Clinica.Core.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\bin\Debug\net9.0\Clinica.Data.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\bin\Debug\net9.0\Clinica.Data.pdb
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\bin\Debug\net9.0\Clinica.Core.pdb
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica.Services.csproj.AssemblyReference.cache
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica.Services.GeneratedMSBuildEditorConfig.editorconfig
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica.Services.AssemblyInfoInputs.cache
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica.Services.AssemblyInfo.cs
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica.Services.csproj.CoreCompileInputs.cache
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica..D624F0B2.Up2Date
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica.Services.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\refint\Clinica.Services.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\Clinica.Services.pdb
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Services\obj\Debug\net9.0\ref\Clinica.Services.dll
