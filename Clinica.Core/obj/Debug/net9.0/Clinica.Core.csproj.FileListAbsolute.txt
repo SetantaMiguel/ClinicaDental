@@ -9,3 +9,5 @@ D:\Programacion\Proyectos\ClinicaDental\Clinica.Core\obj\Debug\net9.0\Clinica.Co
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Core\obj\Debug\net9.0\refint\Clinica.Core.dll
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Core\obj\Debug\net9.0\Clinica.Core.pdb
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Core\obj\Debug\net9.0\ref\Clinica.Core.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Core\obj\Debug\net9.0\Clinica.Core.sourcelink.json
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Core\obj\Debug\net9.0\Clinica.Core.csproj.AssemblyReference.cache

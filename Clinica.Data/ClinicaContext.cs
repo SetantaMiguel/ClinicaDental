@@ -1,9 +1,11 @@
 ﻿using Clinica.Core.Models;
+using Clinica.Core.Models.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clinica.Data;
 
-public class ClinicaContext : DbContext
+public class ClinicaContext : IdentityDbContext<Usuario>
 {
     public ClinicaContext(DbContextOptions<ClinicaContext> options)
         : base(options)
@@ -35,6 +37,9 @@ public class ClinicaContext : DbContext
         entity.Property(e => e.Email)
             .HasMaxLength(200);
       });
+
+ 
+      
     }
 }
 

@@ -5,7 +5,6 @@ const api = axios.create({
   baseURL: 'http://localhost:5198/api'
 });
 
-
 // Interceptor para peticiones (Request)
 api.interceptors.request.use(
   (config) => {

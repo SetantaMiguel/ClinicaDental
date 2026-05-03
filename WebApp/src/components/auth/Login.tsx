@@ -6,7 +6,7 @@ import api from '../../../src/api/axiosConfig';
 
 export default function Login() {
   const [Username, setUsuario] = useState('admin');
-  const [Password, setPassword] = useState('clinica123');
+  const [Password, setPassword] = useState('Admin123!');
   const [error, setError] = useState('');
   const [isloading, setIsLoading] = useState(false);
   

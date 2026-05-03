@@ -1,4 +1,4 @@
-import Notify from '../components/general/Notify';
+import Notify from '../components/common/Notify';
 import { useState,useEffect } from 'react';
 import { useAuth } from '../components/Context/AuthContext';
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen ">
-      <Notify descripcion="Sesión iniciada correctamente" titulo={`¡Bienvenido, ${user}!`} 
+      <Notify descripcion="Sesión iniciada correctamente" titulo={`¡Bienvenido, ${user?.username}!`} 
         tipo="success" position="bottom-right" isOpen={showToast} onClose={() => setShowToast(false)} />
 
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Panel de control</h1>

@@ -2,6 +2,8 @@
 import Dashboard from '../pages/Dashboard';
 import Pacientes from '../pages/Pacientes';
 import React from 'react';
+import Citas from '../pages/Cita';
+import ConfigSistema from '../pages/ServiciosClinica';
 
 export interface RouteConfig {
   path: string;
@@ -14,4 +16,7 @@ export const routes: RouteConfig[] = [
   { path: '/dashboard', element: Dashboard, isPrivate: true, label: 'Inicio' },
   { path: '/', element: Dashboard, isPrivate: true, label: 'Inicio' },
   { path: '/pacientes', element: Pacientes, isPrivate: true, label: 'Pacientes' },
+  { path: '/citas', element: Citas, isPrivate: true, label: 'Citas' },
+  { path: '/servicios', element: ConfigSistema, isPrivate: true, label: 'Servicios Clinica' },
+
 ];

@@ -2,6 +2,7 @@ using Clinica.Data;
 using Clinica.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Clinica.Services.IServices;
+using Clinica.Core.DTOs.Filters;
 
 namespace Clinica.Services;
 
@@ -14,17 +15,30 @@ public class PacienteService : IPacienteService
         _context = context;
     }
 
-    public async Task<PageResponse<Pacientes>> ObtenerTodos(int pageNumber, int pageSize) 
-        => new()
+    public async Task<PageResponse<Pacientes>> ObtenerTodos(PacienteFiltroDTO filtroDTO) 
+    {
+        var query = _context.Pacientes.AsQueryable();
+       
+        if (!string.IsNullOrEmpty(filtroDTO.Nombre))
         {
-            Data = await _context.Pacientes
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(),
-            PageNumber = pageNumber,
-            PageSize = pageSize,
-            TotalRecords = await _context.Pacientes.CountAsync()
+            query = query.Where(p => p.Nombre.Contains(filtroDTO.Nombre));
+        }
+          
+        if (!string.IsNullOrEmpty(filtroDTO.Apellido))
+        {
+            query = query.Where(p => p.Apellido.Contains(filtroDTO.Apellido));
+        }
+        
+        return new()
+        {
+            Data = await query.Skip((filtroDTO.PageNumber - 1) * filtroDTO.PageSize)
+                .Take(filtroDTO.PageSize).ToListAsync(),
+            PageNumber = filtroDTO.PageNumber,
+            PageSize = filtroDTO.PageSize,
+            TotalRecords = await query.CountAsync()
         };
+
+    }
         
     public async Task<Pacientes> Crear(Pacientes paciente)
     {

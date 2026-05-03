@@ -5,6 +5,7 @@ using Clinica.Core.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Clinica.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
+using Clinica.Core.DTOs.Filters;
 
 namespace Clinica.Api.Controllers;
 
@@ -23,9 +24,9 @@ public class PacientesController : ControllerBase
     }
     
     [HttpGet("")]
-    public async Task<ActionResult<PageResponse<Pacientes>>> GetPacientes(int pageNumber = 1, int pageSize = 5)
+    public async Task<ActionResult<PageResponse<Pacientes>>> GetPacientes([FromQuery] PacienteFiltroDTO filtro)
     {
-        var pacientes = await _pacienteService.ObtenerTodos(pageNumber, pageSize);
+        var pacientes = await _pacienteService.ObtenerTodos(filtro);
         return Ok(pacientes);
     }
 

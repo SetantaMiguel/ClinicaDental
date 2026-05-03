@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import SlideBar from "../components/general/SlideBar";
+import SlideBar from "../components/common/SlideBar";
 import { useState } from "react";
 
 export default function Layout() {

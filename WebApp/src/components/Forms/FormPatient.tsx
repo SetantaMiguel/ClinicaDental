@@ -42,7 +42,6 @@ export default function  FormPatient({ OnSuccess, idPaciente }: FormPatientProps
 
             const dataToSend = {
                 ...patient,
-                // Si fechaNacimiento es un string vacío, enviamos null
                 fechaNacimiento: patient.fechaNacimiento === "" ? null : patient.fechaNacimiento
             };  
             
@@ -71,7 +70,6 @@ export default function  FormPatient({ OnSuccess, idPaciente }: FormPatientProps
                 fechaNacimiento: data.fechaNacimiento ? data.fechaNacimiento : null,
                 id: data.id
             });
-
         } catch (error) {
             console.error("Error al cargar paciente:", error);
         }   finally {   
@@ -131,7 +129,7 @@ export default function  FormPatient({ OnSuccess, idPaciente }: FormPatientProps
                 <input type="date" 
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 name="fechaNacimiento"
-                value={patient.fechaNacimiento? patient.fechaNacimiento : ""}
+                value={patient.fechaNacimiento? patient.fechaNacimiento.toString().substring(0,10) : ""}
                 onChange={handleChange}
                  />
             </div>

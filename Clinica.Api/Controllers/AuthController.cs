@@ -1,31 +1,49 @@
+using System.Threading.Tasks;
+using Clinica.Core.Models;
+using Clinica.Core.Models.Identity;
+using Clinica.Data;
+using Clinica.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClinicaDental.Clinica.Api.Controllers
-{
+namespace Clinica.Api.Controllers{
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController(IAuthService authService) : ControllerBase
     {
         private readonly IAuthService _authService = authService;
-        // POST api/auth/login
+
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            if (request == null || string.IsNullOrWhiteSpace(request.Username) 
+            || string.IsNullOrWhiteSpace(request.Password))
                 return BadRequest(new { message = "Usuario y contraseña requeridos." });
 
-            // Validación simple y hardcodeada (sin BD)
-            if (request.Username == "admin" && request.Password == "clinica123")
+            if (await _authService.ValidarUsuario(request.Username, request.Password))
             {
                 var token = _authService.GenerarToken(request.Username);
-
-                return Ok(new { mensaje = "Login exitoso", token = token, username = request.Username });
+                return Ok(new { mensaje = "Login exitoso", token, username = request.Username });
             }
 
             return Unauthorized(new { message = "Credenciales inválidas." });
         }
         
-        // DTO local dentro del mismo archivo
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] Usuario request)
+        {
+            if (request == null 
+            || string.IsNullOrWhiteSpace(request.UserName) 
+            || string.IsNullOrWhiteSpace(request.PasswordHash))
+                return BadRequest(new { message = "Usuario y contraseña requeridos." });
+
+            var resultado = await _authService.CrearUsuario(request.UserName, request.PasswordHash, request.Email?.ToString() ?? string.Empty);
+            
+            if (resultado)
+                return Ok(new { mensaje = "Usuario registrado exitosamente." });
+            else
+                return BadRequest(new { message = "Error al registrar el usuario." });  
+        }
+
         public class LoginRequest
         {
             public string Username { get; set; } = string.Empty;

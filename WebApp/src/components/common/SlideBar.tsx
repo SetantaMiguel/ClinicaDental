@@ -1,6 +1,7 @@
 import { Users, Calendar, Home, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Navigate, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import CloseSession  from '../auth/CloseSession';
+import NavItem from './NavItem';
 
 interface SlideBarProps {
   isExpanded: boolean;
@@ -11,11 +12,24 @@ export default function SlideBar({ isExpanded, setIsExpanded }: SlideBarProps) {
 
   const menuItems = [
     { icon: <Home size={22} />, ruta: '/dashboard', label: 'Inicio' },
-    { icon: <Users size={22} />, ruta: '/pacientes', label: 'Pacientes' },
-    { icon: <Calendar size={22} />, ruta: '/', label: 'Citas' },
-    { icon: <Settings size={22} />, ruta: '/', label: 'Configuración' },
+    { 
+      icon: <Users size={22} />, 
+      label: 'Pacientes',
+      subItems: [
+        { label: 'Listado', ruta: '/pacientes' },
+        //{ label: 'Historial Clínico', ruta: '/pacientes/historial' },
+      ]
+    },
+    { icon: <Calendar size={22} />, ruta: '/citas', label: 'Citas' },
+    { 
+      icon: <Settings size={22} />, 
+      label: 'Configuración',
+      subItems: [
+        { label: 'Sistema', ruta: '/servicios' },
+      ]      
+    },
   ];
-
+  
   return (
     <aside className={`
       fixed top-0 left-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out z-50
@@ -44,33 +58,12 @@ export default function SlideBar({ isExpanded, setIsExpanded }: SlideBarProps) {
           </span>
         </div>
 
-        {/* Menú */}
-        <nav className="flex-1 flex flex-col px-4 space-y-2">
+        <nav className="flex-1 flex flex-col px-4 space-y-2 overflow-y-auto">
           {menuItems.map((item, index) => (
-            <NavLink 
-              key={index} 
-              to={item.ruta}
-              className={({ isActive }) => `
-                flex items-center w-full p-3 transition-all group rounded-xl
-                ${isActive 
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600'}
-              `}
-            >
-              <div className="min-w-[22px]">
-                {item.icon}
-              </div>
-              <span className={`ml-4 font-medium whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
-                {item.label}
-              </span>
-            </NavLink>
+            <NavItem key={index} item={item} isExpanded={isExpanded} />
           ))}
-
           <div className="flex-1" />
-          {/* Botón de Cerrar Sesión */}
-          <div className="flex mb-4">
-            <CloseSession />
-          </div>
+          <CloseSession />
         </nav>
       </div>
     </aside>

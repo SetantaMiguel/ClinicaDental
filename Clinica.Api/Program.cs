@@ -5,10 +5,23 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Clinica.Services;
+using Clinica.Services.Services;
+using Clinica.Core.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
+builder.Services.AddDbContext<ClinicaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<Usuario, IdentityRole>() // <--- Usa TU clase Usuario
+    .AddEntityFrameworkStores<ClinicaContext>()
+    .AddDefaultTokenProviders();
+    
+// Configuración de JWT    
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
 
@@ -33,10 +46,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ClinicaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
+// Inyección de dependencias para servicios
 builder.Services.AddScoped<IPacienteService, PacienteService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
