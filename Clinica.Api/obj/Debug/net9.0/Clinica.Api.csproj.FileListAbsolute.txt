@@ -163,3 +163,5 @@ D:\Programacion\Proyectos\ClinicaDental\Clinica.Api\bin\Debug\net9.0\runtimes\wi
 D:\Programacion\Proyectos\ClinicaDental\Clinica.api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\Programacion\Proyectos\ClinicaDental\clinica.api\obj\Debug\net9.0\Clinica.Api.sourcelink.json
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Api\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Api\bin\Debug\net9.0\Npgsql.dll
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Api\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

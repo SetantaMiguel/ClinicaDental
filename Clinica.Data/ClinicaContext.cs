@@ -38,6 +38,19 @@ public class ClinicaContext : IdentityDbContext<Usuario>
             .HasMaxLength(200);
       });
 
+    // Configuración para que todas las fechas sean tratadas como UTC
+    foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+    {
+        var properties = entityType.GetProperties()
+            .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?));
+
+        foreach (var property in properties)
+        {
+            property.SetValueConverter(new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
+        }
+    }
  
       
     }

@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Clinica.Services.Services;
 
-public class AuthService(IConfiguration config,ClinicaContext context,UserManager<Usuario> userManager) : IAuthService
+public class AuthService(IConfiguration config, ClinicaContext context, UserManager<Usuario> userManager) : IAuthService
 {
     private readonly IConfiguration  _config = config;
     private readonly ClinicaContext _context = context;
@@ -24,11 +24,13 @@ public class AuthService(IConfiguration config,ClinicaContext context,UserManage
         {
             UserName = username,
             Email = correo,
-            PasswordHash = password
+            PasswordHash = password,
+            isEnabled = true,
+            FechaCreacion = DateTime.UtcNow,
+            FechaModificacion = DateTime.UtcNow
         };
 
-        _context.Users.Add(nuevoUsuario);
-        await _context.SaveChangesAsync();
+        var a = await _userManager.CreateAsync(nuevoUsuario, password);
         return true;
     }
 

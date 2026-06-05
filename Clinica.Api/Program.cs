@@ -11,13 +11,10 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-
 builder.Services.AddDbContext<ClinicaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("SupaConnection")));
 
-builder.Services.AddIdentity<Usuario, IdentityRole>() // <--- Usa TU clase Usuario
+builder.Services.AddIdentity<Usuario, IdentityRole>() 
     .AddEntityFrameworkStores<ClinicaContext>()
     .AddDefaultTokenProviders();
     
