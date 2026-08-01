@@ -8,9 +8,9 @@ D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Da
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Data.AssemblyInfoInputs.cache
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Data.AssemblyInfo.cs
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Data.csproj.CoreCompileInputs.cache
+D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Data.sourcelink.json
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica..F242D277.Up2Date
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Data.dll
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\refint\Clinica.Data.dll
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Data.pdb
 D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\ref\Clinica.Data.dll
-D:\Programacion\Proyectos\ClinicaDental\Clinica.Data\obj\Debug\net9.0\Clinica.Data.sourcelink.json

@@ -5,4 +5,5 @@ export interface Paciente {
   telefono: string;
   email?: string; 
   fechaNacimiento?: string | null;
+  identificacion?: string | null;
 }

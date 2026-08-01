@@ -5,14 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Clinica.Data;
 
-public class ClinicaContext : IdentityDbContext<Usuario>
+public class ClinicaContext(DbContextOptions<ClinicaContext> options) : IdentityDbContext<Usuario>(options)
 {
-    public ClinicaContext(DbContextOptions<ClinicaContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Pacientes> Pacientes { get; set; }
+    public DbSet<CatalogoCitas> CatalogoCitas { get; set; }
  
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +32,21 @@ public class ClinicaContext : IdentityDbContext<Usuario>
 
         entity.Property(e => e.Email)
             .HasMaxLength(200);
+      });
+
+      modelBuilder.Entity<CatalogoCitas>(entity =>
+      {
+        entity.ToTable("CatalogoCitas");
+        entity.HasKey(e => e.Id);
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
+        entity.Property(e => e.NombreCita)
+            .IsRequired()
+            .HasMaxLength(100);
+        entity.Property(e => e.Descripcion)
+            .IsRequired()
+            .HasMaxLength(500);
+        entity.Property(e => e.Vigente)
+            .IsRequired();
       });
 
     // Configuración para que todas las fechas sean tratadas como UTC

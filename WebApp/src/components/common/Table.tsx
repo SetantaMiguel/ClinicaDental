@@ -1,4 +1,3 @@
-import Loading from '../Icons/Loading.tsx';
 import {useState} from 'react';
 import CustomSwitch from './Switch.tsx';
 import type { PagePrompt } from '../../types/index.ts';
@@ -47,23 +46,24 @@ export default function Table<T>({ columns, data, isLoading, PagePromts, onPageC
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                     {isLoading ? (
-                        <tr>
-                            <td colSpan={columns.length} className="py-20">
-                                <div className="flex flex-col items-center justify-center w-full">
-                                    <Loading />
-                                    <p className="text-gray-500 font-medium mt-4 animate-pulse">
-                                        Cargando pacientes...
-                                    </p>
-                                </div>
-                            </td>
-                        </tr>
+                                /* --- SKELETON LOADER MODERNO --- */
+                                /* Generamos 8 filas falsas animadas que mantienen la estructura de la tabla */
+                                Array.from({ length: 10 }).map((_, rowIndex) => (
+                                    <tr key={rowIndex} className="animate-pulse">
+                                        {columns.map((_, colIndex) => (
+                                            <td key={colIndex} className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
+                                                <div className="h-4 bg-gray-200/80 rounded-md w-3/4"></div>
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
                     ) : data.length === 0 ? (
                         <tr><td colSpan={columns.length} className="p-10 text-center text-gray-400">No hay datos disponibles</td></tr>
                     ) : (
                         data.map((item, rowIndex) => (
                             <tr key={rowIndex} className="hover:bg-blue-50/50 transition-colors">
                                 {columns.map((col, colIndex) => (
-                                    <td key={colIndex} className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
+                                    <td key={colIndex} className="px-6 py-2 text-sm text-gray-600 whitespace-nowrap">
                                         {col.render ? col.render(item) : (item as any)[col.key]}
                                     </td>
                                 ))}

@@ -52,4 +52,22 @@ public class PacienteService : IPacienteService
         var paciente = await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
         return paciente;
     }
+
+    public async Task<List<Pacientes>>  ObtenerPorId_NombreAsync(int? id, string? nombre) 
+    {
+        var query = _context.Pacientes.AsNoTracking();
+
+        if (id.HasValue && id.Value > 0)
+        {
+            query = query.Where(p => p.Id == id.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(nombre))
+        {
+            query = query.Where(p => p.Nombre.ToUpper().StartsWith(nombre.ToUpper()));
+        }
+
+        return await query.ToListAsync();
+    }
+
 }

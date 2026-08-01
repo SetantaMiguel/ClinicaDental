@@ -4,18 +4,20 @@ import Modal from '../components/common/Modal.tsx';
 import FormPatient from '../components/Forms/FormPatient';
 import Notify from '../components/common/Notify.tsx';
 import type { Paciente,PagePrompt,notifyMessage } from '../types/index.ts';
-import { UserRoundPlus, Search, UserPen, Eye } from 'lucide-react';
+import { UserRoundPlus, Search, UserPen, HeartPlus } from 'lucide-react';
 import api from '../api/axiosConfig.ts';
 import { AxiosError } from 'axios';
 import Popover from '../components/common/Popover.tsx';
 import FormFilterPatient from '../components/Forms/FormFilterPatient.tsx';
 import type { PacienteFiltro } from '../types/index.ts';
+import FormAppointment from '../components/Forms/FormAppointment.tsx';
 
 export default function PacientesPage() {
 
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenCita, setIsModalOpenCita] = useState(false);
   const [notifyMessage, setNotifyMessage] = useState<notifyMessage>({ titulo: "", descripcion: "",isOpen: false,tipo:"success",position:"bottom-right",onClose(){} });
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | undefined>(undefined);
   const [PagePrompt, setPagePrompt] = useState<PagePrompt>({ pageNumber: 1, pageSize: 10, TotalRecords: 0 });
@@ -80,6 +82,9 @@ export default function PacientesPage() {
         } 
         return fecha.toLocaleDateString();
       }
+    },
+    {
+      header: 'Identificación', key: 'identificacion'
     },  
     {
       header: 'Edad', key: 'Edad', 
@@ -96,7 +101,7 @@ export default function PacientesPage() {
       render: (p : Paciente) => (
         <>
           <button className="text-blue-600 hover:text-blue-800 font-medium" onClick={() => handleOpenModal(p.id)}><UserPen /></button>
-          <button className="ml-4 text-green-600 hover:text-green-800 font-medium"><Eye /></button>
+          <button className="ml-4 text-green-600 hover:text-green-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><HeartPlus /></button>
         </>
       ) 
     },
@@ -107,6 +112,15 @@ export default function PacientesPage() {
     setSelectedPacienteId(id);        
     setIsModalOpen(true);
   };
+    
+  const handleOpenModalCita = (id?:number) => {
+    setSelectedPacienteId(id);        
+    setIsModalOpenCita(true);
+  };
+
+  const handleCloseModalCita = () => {
+    setIsModalOpenCita(false);
+  }
   
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -122,10 +136,14 @@ export default function PacientesPage() {
   }
 
   return (
-    <div className="p-6 relative">
+    <div className="relative">
+
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} 
         children={<FormPatient OnSuccess={handleFormSuccess} 
         idPaciente={selectedPacienteId} />}  />
+
+      <Modal isOpen={isModalOpenCita} onClose={handleCloseModalCita} 
+        children={<FormAppointment OnSuccess={handleFormSuccess}  idPaciente={selectedPacienteId} />}  />
 
       <Notify 
             descripcion={notifyMessage.descripcion} 
@@ -135,18 +153,18 @@ export default function PacientesPage() {
             isOpen={notifyMessage.isOpen}
             onClose={() => setNotifyMessage({...notifyMessage, isOpen: false})} />
 
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Pacientes</h1>
+      <h1 className="text-2xl font-bold text-gray-800 ">Gestión de Pacientes</h1>
+      <button className='mt-4 mr-2 px-4 py-2 bg-blue-600 text-white shadow-md rounded-lg hover:bg-blue-700 transition'
+        onClick={() => handleOpenModal(undefined)}>
+            Paciente
+            <span className="pl-2 inline-block"><UserRoundPlus size={16} strokeWidth={2.5} /></span>
+      </button>
       <button className="
                   mt-4 mr-2 px-4 py-2  bg-blue-600 text-white shadow-md
                  rounded-lg hover:bg-blue-700 transition
                  " onClick={() => getPacientes()} >
           Buscar
-          <span className="ml-2 pt-1 inline-block"><Search size={16}  strokeWidth={2.5}  /></span>
-      </button>
-      <button className='mt-4 mr-2 px-4 py-2 bg-blue-600 text-white shadow-md rounded-lg hover:bg-blue-700 transition'
-        onClick={() => handleOpenModal(undefined)}>
-            Agregar Paciente
-            <span className="ml-2 pt-1 inline-block"><UserRoundPlus size={16}  strokeWidth={2.5}  /></span>
+          <span className="pl-2 inline-block"><Search size={16}  strokeWidth={2.5} /></span>
       </button>
       <div className="inline-block relative">
         <Popover 

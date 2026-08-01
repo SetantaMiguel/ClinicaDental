@@ -6,7 +6,7 @@ namespace Clinica.Services.IServices;
 public interface IPacienteService
 {
     Task<PageResponse<Pacientes>>ObtenerTodos(PacienteFiltroDTO filtro);
-
     Task<Pacientes> Crear(Pacientes paciente);
     Task<Pacientes?> ObtenerPorId(int id);
+    Task<List<Pacientes>> ObtenerPorId_NombreAsync(int? id, string? nombre);
 }

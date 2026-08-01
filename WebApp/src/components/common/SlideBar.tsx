@@ -1,5 +1,4 @@
 import { Users, Calendar, Home, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
 import CloseSession  from '../auth/CloseSession';
 import NavItem from './NavItem';
 
@@ -22,7 +21,7 @@ export default function SlideBar({ isExpanded, setIsExpanded }: SlideBarProps) {
     },
     { icon: <Calendar size={22} />, ruta: '/citas', label: 'Citas' },
     { 
-      icon: <Settings size={22} />, 
+      icon: <Settings size={22}  />, 
       label: 'Configuración',
       subItems: [
         { label: 'Sistema', ruta: '/servicios' },
@@ -51,10 +50,10 @@ export default function SlideBar({ isExpanded, setIsExpanded }: SlideBarProps) {
         {/* Logo */}
         <div className="flex items-center h-20 px-6 overflow-hidden">
           <div className="min-w-[32px] w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-            D
+            O
           </div>
           <span className={`ml-4 text-xl font-bold text-gray-800 transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
-            DentalCloud
+            Health
           </span>
         </div>
 
@@ -64,6 +63,7 @@ export default function SlideBar({ isExpanded, setIsExpanded }: SlideBarProps) {
           ))}
           <div className="flex-1" />
           <CloseSession />
+          <br />
         </nav>
       </div>
     </aside>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj": {}
+    "d:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj": {}
   },
   "projects": {
-    "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj": {
+    "d:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj",
+        "projectUniqueName": "d:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj",
         "projectName": "Clinica.Core",
-        "projectPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj",
+        "projectPath": "d:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\Clinica.Core.csproj",
         "packagesPath": "C:\\Users\\Miguel\\.nuget\\packages\\",
-        "outputPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\obj\\",
+        "outputPath": "d:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

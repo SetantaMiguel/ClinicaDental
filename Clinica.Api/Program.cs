@@ -46,6 +46,8 @@ builder.Services.AddSwaggerGen();
 // Inyección de dependencias para servicios
 builder.Services.AddScoped<IPacienteService, PacienteService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<ICatalogoCitaService, CatalogoCitaService>();
 
 builder.Services.AddCors(options =>
 {

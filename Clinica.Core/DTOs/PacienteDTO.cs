@@ -8,4 +8,6 @@ public class PacienteDTO
     public DateTime? FechaNacimiento { get; set; }
     public string Telefono { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string Identificacion { get; set; } = string.Empty;
+
 }
