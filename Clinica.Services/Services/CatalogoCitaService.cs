@@ -1,43 +1,22 @@
 using Clinica.Core.Models;
+using Clinica.Data;
 using Clinica.Services.IServices;
 
 namespace Clinica.Services.Services;
 
-public class CatalogoCitaService : ICatalogoCitaService
+public class CatalogoCitaService(ClinicaContext context) : Repository<CatalogoCitas>(context), ICatalogoCitaService
 {
-    private readonly IRepository _repository;
-
-    public CatalogoCitaService(IRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task<IReadOnlyList<CatalogoCitas>> ObtenerTodosAsync()
     {
-        return await _repository.GetAllOrderedAsync<CatalogoCitas>(nameof(CatalogoCitas.Id), false);
-    }
-
-    public async Task<CatalogoCitas?> ObtenerPorIdAsync(int id)
-    {
-        return await _repository.GetByIdAsync<CatalogoCitas>(id);
-    }
-
-    public async Task<CatalogoCitas> CrearAsync(CatalogoCitas catalogoCita)
-    {
-        return await _repository.AddAsync(catalogoCita);
-    }
-
-    public async Task ActualizarAsync(CatalogoCitas catalogoCita)
-    {
-        await _repository.UpdateAsync(catalogoCita);
+        return await GetAllOrderedAsync(nameof(CatalogoCitas.Id), false);
     }
 
     public async Task EliminarAsync(int id)
     {
-        var item = await _repository.GetByIdAsync<CatalogoCitas>(id);
+        var item = await GetByIdAsync(id);
         if (item is not null)
         {
-            await _repository.DeleteAsync(item);
+            await DeleteAsync(item);
         }
     }
 }

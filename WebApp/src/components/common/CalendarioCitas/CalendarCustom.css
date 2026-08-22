@@ -1,49 +1,44 @@
-/* 1. Suavizar bordes generales */
-.rbc-calendar {
-    border: none !important;
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-}
+/* CalendarCustom.css */
 
-/* 2. Líneas de la cuadrícula (bordes internos) */
-.rbc-time-content, 
-.rbc-time-header, 
-.rbc-month-view, 
-.rbc-header,
-.rbc-day-bg {
-    border-color: #f3f4f6 !important; /* gray-100 */
-}
-
-/* 3. El borde de las horas a la izquierda */
-.rbc-time-gutter .rbc-timeslot-group {
-    border-right: 1px solid #f3f4f6 !important;
-}
-
-/* 4. Estilo de los encabezados de los días */
-.rbc-header {
-    border-bottom: 2px solid #f9fafb !important; /* gray-50 */
-    font-weight: 800 !important;
-    color: #6b7280 !important; /* gray-500 */
-    text-transform: uppercase !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 0.05em !important;
-    padding: 2rem 0.5rem !important;
-}
-
-/* 5. Color de fondo para fuera de rango */
-.rbc-off-range-bg {
-    background-color: rgba(0, 93, 187, 0.5) !important;
-}
-
-/* 6. Indicador de hora actual */
-.rbc-current-time-indicator {
-    background-color: #ef4444 !important; /* red-500 */
-    height: 1rem !important;
-}
-
-/* Estilo para los eventos (Citas) */
+/* Revertimos el reset de Tailwind para los eventos del calendario */
 .rbc-event {
-    background-color: #2563eb !important; /* blue-600 */
-    border-radius: 8px !important;
-    border: none !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  padding: 4px 8px !important;
+  text-align: left !important;
+  line-height: 1.2 !important;
+  outline: none !important;
+}
+
+/* Ajustamos el contenedor interno del evento para que ocupe todo el espacio */
+.rbc-event-content {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Evitamos que el texto se salga si la cita es muy corta en tiempo */
+.rbc-event-label {
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+
+/* Oculta el indicador de hora actual y las franjas de tiempo del calendario */
+.rbc-current-time-indicator {
+  display: none !important;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: none !important;
+}
+
+.rbc-timeslot-group {
+  border-bottom: none !important;
+}
+
+.rbc-time-view .rbc-time-gutter {
+  border-right: none !important;
 }

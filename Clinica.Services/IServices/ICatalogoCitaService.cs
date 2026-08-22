@@ -2,11 +2,7 @@ using Clinica.Core.Models;
 
 namespace Clinica.Services.IServices;
 
-public interface ICatalogoCitaService
+public interface ICatalogoCitaService : IRepository<CatalogoCitas>
 {
-    Task<IReadOnlyList<CatalogoCitas>> ObtenerTodosAsync();
-    Task<CatalogoCitas?> ObtenerPorIdAsync(int id);
-    Task<CatalogoCitas> CrearAsync(CatalogoCitas catalogoCita);
-    Task ActualizarAsync(CatalogoCitas catalogoCita);
-    Task EliminarAsync(int id);
+
 }

@@ -2,7 +2,9 @@ export interface Cita {
     id: number;
     idPaciente: number;
     tipoCitaId: number;
-    fecha: string;
-    hora: string;
+    fechaInicio: string;
+    horaInicio: string;
+    fechaFin: string;
+    horaFin: string;
     observaciones?: string | null;
 }

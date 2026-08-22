@@ -51,7 +51,7 @@ export default function FormPatient({ OnSuccess, idPaciente }: FormPatientProps)
             };
 
             const { data } = await api[method](url, dataToSend);
-            OnSuccess(idPaciente ?? data.id, isEdit);
+            OnSuccess(data.id, isEdit);
         } catch (error: AxiosError | any) {
             //console.error("Error al guardar paciente:", error);
             setErrorForm(error.response?.data.message || 'Error al conectar con el servidor');

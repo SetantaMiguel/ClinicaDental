@@ -12,8 +12,9 @@ namespace Clinica.Core.Models
         public string NombreCita { get; set; } = string.Empty;
         [Required]
         public string Descripcion { get; set; } = string.Empty;
+        public decimal PrecioBase { get; set; } = 0;        
         [Required]
         public bool Vigente { get; set; }
-
+        public virtual ICollection<Citas> ListaCitas { get; set; } = [];
     }
 }

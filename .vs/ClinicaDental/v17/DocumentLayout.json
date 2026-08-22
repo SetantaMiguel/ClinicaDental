@@ -1,7 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{337D34FD-FCE1-44E3-951E-990B12AEFFB2}|Clinica.Data\\Clinica.Data.csproj|d:\\programacion\\proyectos\\clinicadental\\clinica.data\\clinicacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{337D34FD-FCE1-44E3-951E-990B12AEFFB2}|Clinica.Data\\Clinica.Data.csproj|solutionrelative:clinica.data\\clinicacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,8 +14,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ClinicaContext.cs",
+              "DocumentMoniker": "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Data\\ClinicaContext.cs",
+              "RelativeDocumentMoniker": "Clinica.Data\\ClinicaContext.cs",
+              "ToolTip": "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Data\\ClinicaContext.cs",
+              "RelativeToolTip": "Clinica.Data\\ClinicaContext.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAcwF0AAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-07T23:01:41.089Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"

@@ -40,12 +40,111 @@ namespace Clinica.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<decimal>("PrecioBase")
+                        .HasColumnType("numeric");
+
                     b.Property<bool>("Vigente")
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
                     b.ToTable("CatalogoCitas", (string)null);
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.CatalogoEstadoCita", b =>
+                {
+                    b.Property<string>("Codigo")
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<bool>("Estado")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Codigo");
+
+                    b.ToTable("CatalogoEstadoCita", (string)null);
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.CitaRecibo", b =>
+                {
+                    b.Property<int>("IdRecibo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdRecibo"));
+
+                    b.Property<int>("CitaId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("FIngreso")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("IdMoneda")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("MedioPago")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal>("MontoNeto")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Observaciones")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("IdRecibo");
+
+                    b.HasIndex("CitaId")
+                        .IsUnique();
+
+                    b.HasIndex("IdMoneda");
+
+                    b.ToTable("CitaRecibo", (string)null);
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.Citas", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("EstadoCitaCodigo")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("character varying(1)");
+
+                    b.Property<DateTime>("FechaFin")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("FechaInicio")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PacienteId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TipoCitaId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstadoCitaCodigo");
+
+                    b.HasIndex("PacienteId");
+
+                    b.HasIndex("TipoCitaId");
+
+                    b.ToTable("Citas", (string)null);
                 });
 
             modelBuilder.Entity("Clinica.Core.Models.Identity.Usuario", b =>
@@ -119,6 +218,30 @@ namespace Clinica.Data.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.Moneda", b =>
+                {
+                    b.Property<int>("IdMoneda")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(1)
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdMoneda"));
+
+                    b.Property<string>("MonedaDescripcion")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("MonedaSimbolo")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.HasKey("IdMoneda");
+
+                    b.ToTable("Moneda", (string)null);
                 });
 
             modelBuilder.Entity("Clinica.Core.Models.Pacientes", b =>
@@ -293,6 +416,52 @@ namespace Clinica.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Clinica.Core.Models.CitaRecibo", b =>
+                {
+                    b.HasOne("Clinica.Core.Models.Citas", "Cita")
+                        .WithOne("Recibo")
+                        .HasForeignKey("Clinica.Core.Models.CitaRecibo", "CitaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Clinica.Core.Models.Moneda", "Moneda")
+                        .WithMany()
+                        .HasForeignKey("IdMoneda")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cita");
+
+                    b.Navigation("Moneda");
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.Citas", b =>
+                {
+                    b.HasOne("Clinica.Core.Models.CatalogoEstadoCita", "EstadoCita")
+                        .WithMany()
+                        .HasForeignKey("EstadoCitaCodigo")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Clinica.Core.Models.Pacientes", "Paciente")
+                        .WithMany("ListaCitas")
+                        .HasForeignKey("PacienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Clinica.Core.Models.CatalogoCitas", "TipoCita")
+                        .WithMany("ListaCitas")
+                        .HasForeignKey("TipoCitaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EstadoCita");
+
+                    b.Navigation("Paciente");
+
+                    b.Navigation("TipoCita");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -342,6 +511,21 @@ namespace Clinica.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.CatalogoCitas", b =>
+                {
+                    b.Navigation("ListaCitas");
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.Citas", b =>
+                {
+                    b.Navigation("Recibo");
+                });
+
+            modelBuilder.Entity("Clinica.Core.Models.Pacientes", b =>
+                {
+                    b.Navigation("ListaCitas");
                 });
 #pragma warning restore 612, 618
         }

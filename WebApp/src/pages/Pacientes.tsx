@@ -2,23 +2,23 @@ import Tabla from '../components/common/Table.tsx';
 import { useState, useEffect } from 'react';
 import Modal from '../components/common/Modal.tsx';
 import FormPatient from '../components/Forms/FormPatient';
-import Notify from '../components/common/Notify.tsx';
-import type { Paciente,PagePrompt,notifyMessage } from '../types/index.ts';
-import { UserRoundPlus, Search, UserPen, HeartPlus } from 'lucide-react';
+import type { Paciente, PagePrompt } from '../types/index.ts';
+import { UserRoundPlus, Search, UserPen, HeartPlus, ChevronRight, Plus } from 'lucide-react';
 import api from '../api/axiosConfig.ts';
 import { AxiosError } from 'axios';
 import Popover from '../components/common/Popover.tsx';
 import FormFilterPatient from '../components/Forms/FormFilterPatient.tsx';
 import type { PacienteFiltro } from '../types/index.ts';
 import FormAppointment from '../components/Forms/FormAppointment.tsx';
+import { useNotify } from '../components/Context/NotifyContext';
 
 export default function PacientesPage() {
+  const { success, error } = useNotify();
 
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenCita, setIsModalOpenCita] = useState(false);
-  const [notifyMessage, setNotifyMessage] = useState<notifyMessage>({ titulo: "", descripcion: "",isOpen: false,tipo:"success",position:"bottom-right",onClose(){} });
   const [selectedPacienteId, setSelectedPacienteId] = useState<number | undefined>(undefined);
   const [PagePrompt, setPagePrompt] = useState<PagePrompt>({ pageNumber: 1, pageSize: 10, TotalRecords: 0 });
   const [showFilter, setShowFilter] = useState(false);
@@ -33,9 +33,8 @@ export default function PacientesPage() {
   const getPacientes = async (filtro?: PacienteFiltro) => {
     try {
       setIsLoading(true);
-      // Si recibimos filtro, lo guardamos en el estado y lo usamos; si no, usamos el estado actual
       const filtroUsar = filtro ? { ...filtroPaciente, ...filtro } : filtroPaciente;
-      
+
       if (filtro) setFiltroPaciente(filtroUsar);
 
       const response = await api.get(`/Pacientes`, {
@@ -55,12 +54,11 @@ export default function PacientesPage() {
       setIsLoading(false);
       return setPacientes(response.data.data);
 
-    } catch (error: AxiosError | any) {
-      if (error.response?.status === 401) {
-        setNotifyMessage({ ...notifyMessage, titulo: "Error", descripcion: "Usuario no autorizado", isOpen: true, tipo: "error" })
+    } catch (err: AxiosError | any) {
+      if (err.response?.status === 401) {
+        error({ titulo: "Error", descripcion: "Usuario no autorizado" })
       }
-      console.error("Error al obtener pacientes:", error);
-      //throw error;
+      console.error("Error al obtener pacientes:", err);
     }
   };
 
@@ -72,22 +70,22 @@ export default function PacientesPage() {
     { header: 'Nombre Completo', key: 'nombre', render: (p: Paciente) => `${p.nombre} ${p.apellido}` },
     { header: 'Teléfono', key: 'telefono' },
     { header: 'Email', key: 'email' },
-    { 
+    {
       header: "Fecha de Nacimiento",
-      key: "fechaNacimiento", 
+      key: "fechaNacimiento",
       render: (p: Paciente) => {
         const fecha = new Date((p as any).fechaNacimiento);
-        if (fecha.getFullYear() === 1 ){
+        if (fecha.getFullYear() === 1) {
           return <span className="text-gray-400">N/A</span>;
-        } 
+        }
         return fecha.toLocaleDateString();
       }
     },
     {
       header: 'Identificación', key: 'identificacion'
-    },  
+    },
     {
-      header: 'Edad', key: 'Edad', 
+      header: 'Edad', key: 'Edad',
       render: (p: Paciente) => {
         const fechaNacimiento = new Date((p as any).fechaNacimiento);
         const hoy = new Date();
@@ -95,89 +93,96 @@ export default function PacientesPage() {
         return edad;
       }
     },
-    { 
-      header: 'Acciones', 
-      key: 'acciones', 
-      render: (p : Paciente) => (
+    {
+      header: 'Acciones',
+      key: 'acciones',
+      render: (p: Paciente) => (
         <>
           <button className="text-blue-600 hover:text-blue-800 font-medium" onClick={() => handleOpenModal(p.id)}><UserPen /></button>
           <button className="ml-4 text-green-600 hover:text-green-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><HeartPlus /></button>
         </>
-      ) 
+      )
     },
   ];
-  
-  // Uso del Modal
-  const handleOpenModal = (id?:number) => {
-    setSelectedPacienteId(id);        
+
+  const handleOpenModal = (id?: number) => {
+    setSelectedPacienteId(id);
     setIsModalOpen(true);
   };
-    
-  const handleOpenModalCita = (id?:number) => {
-    setSelectedPacienteId(id);        
+
+  const handleOpenModalCita = (id?: number) => {
+    setSelectedPacienteId(id);
     setIsModalOpenCita(true);
   };
 
   const handleCloseModalCita = () => {
     setIsModalOpenCita(false);
   }
-  
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   }
-  
+
   const handleFormSuccess = (id: number, isEdit: boolean) => {
-      handleCloseModal();
-      setNotifyMessage({ titulo: "¡Operación exitosa!",
-            descripcion: `Paciente ${isEdit ? "actualizado" : "agregado"} correctamente con ID: ${id}`,
-            isOpen: true,
-            tipo:"success",position:"bottom-right" });
-      getPacientes();
+    handleCloseModal();
+    success({
+      titulo: "¡Operación exitosa!",
+      descripcion: `Paciente ${isEdit ? "actualizado" : "agregado"} correctamente con ID: ${id}`,
+    });
+    getPacientes();
+  }
+
+  const handleFormSuccessCita = (id: number, isEdit: boolean) => {
+    handleCloseModalCita();
+    success({
+      titulo: "¡Operación exitosa!",
+      descripcion: `Cita ${isEdit ? "actualizada" : "agregada"} correctamente con ID: ${id}`,
+    });
+    getPacientes();
   }
 
   return (
     <div className="relative">
 
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} 
-        children={<FormPatient OnSuccess={handleFormSuccess} 
-        idPaciente={selectedPacienteId} />}  />
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}
+        children={<FormPatient OnSuccess={handleFormSuccess}
+          idPaciente={selectedPacienteId} />} />
 
-      <Modal isOpen={isModalOpenCita} onClose={handleCloseModalCita} 
-        children={<FormAppointment OnSuccess={handleFormSuccess}  idPaciente={selectedPacienteId} />}  />
-
-      <Notify 
-            descripcion={notifyMessage.descripcion} 
-            titulo={notifyMessage.titulo}
-            tipo={notifyMessage.tipo}
-            position={notifyMessage.position}
-            isOpen={notifyMessage.isOpen}
-            onClose={() => setNotifyMessage({...notifyMessage, isOpen: false})} />
+      <Modal isOpen={isModalOpenCita} onClose={handleCloseModalCita}
+        children={<FormAppointment OnSuccess={handleFormSuccessCita} idPaciente={selectedPacienteId} />} />
 
       <h1 className="text-2xl font-bold text-gray-800 ">Gestión de Pacientes</h1>
-      <button className='mt-4 mr-2 px-4 py-2 bg-blue-600 text-white shadow-md rounded-lg hover:bg-blue-700 transition'
-        onClick={() => handleOpenModal(undefined)}>
-            Paciente
-            <span className="pl-2 inline-block"><UserRoundPlus size={16} strokeWidth={2.5} /></span>
-      </button>
-      <button className="
-                  mt-4 mr-2 px-4 py-2  bg-blue-600 text-white shadow-md
-                 rounded-lg hover:bg-blue-700 transition
-                 " onClick={() => getPacientes()} >
-          Buscar
-          <span className="pl-2 inline-block"><Search size={16}  strokeWidth={2.5} /></span>
-      </button>
-      <div className="inline-block relative">
-        <Popover 
-          children={<FormFilterPatient ApplyFilters={getPacientes}  filtroActual={filtroPaciente}
-                    onCancel={clearFilters} />}
-          isOpen={showFilter} onToggle={() => setShowFilter(!showFilter)} />
+      <div className='flex p-2'>
+        <button className="flex w-50  items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
+          hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group"
+          onClick={() => handleOpenModal()}>
+          <div className="flex items-center gap-3">
+            <div className="text-blue-600"><UserRoundPlus className="w-5 h-5" /></div>
+            <span className="font-semibold text-slate-700">Nuevo Paciente</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
+        </button>   
 
+        <button className="flex w-25 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
+          hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group" onClick={() => getPacientes()} >
+          <span className="font-semibold text-slate-700">Buscar</span>
+          <span className="pl-2 inline-block"><Search size={16} strokeWidth={2.5} /></span>
+        </button>
+
+        <div>
+          <Popover classChild="flex w-25 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
+          hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group font-semibold text-slate-700"
+            children={<FormFilterPatient ApplyFilters={getPacientes} filtroActual={filtroPaciente}
+              onCancel={clearFilters} />}
+            isOpen={showFilter} onToggle={() => setShowFilter(!showFilter)} />
+
+        </div>
       </div>
-      <hr className="my-4"/>
-      <Tabla columns={columnas} data={pacientes} isLoading={isLoading} 
-            PagePromts={PagePrompt} onPageChange={(page) => setPagePrompt({...PagePrompt, pageNumber: page})}
-             />
+      <hr className="my-4" />
+      <Tabla columns={columnas} data={pacientes} isLoading={isLoading}
+        PagePromts={PagePrompt} onPageChange={(page) => setPagePrompt({ ...PagePrompt, pageNumber: page })}
+      />
     </div>
   );
-  
+
 };

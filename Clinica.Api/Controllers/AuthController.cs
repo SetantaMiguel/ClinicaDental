@@ -1,7 +1,4 @@
-using System.Threading.Tasks;
-using Clinica.Core.Models;
 using Clinica.Core.Models.Identity;
-using Clinica.Data;
 using Clinica.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 

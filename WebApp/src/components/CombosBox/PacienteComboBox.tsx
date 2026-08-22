@@ -11,7 +11,7 @@ interface PacienteOption {
 interface PacienteComboBoxProps {
   value?: number;
   valueText?: string;
-  onChange: (id: number) => void;
+  onChange: (id: number, nombre: string) => void;
 }
 
 interface BuscarPacientesParams {
@@ -19,95 +19,107 @@ interface BuscarPacientesParams {
   nombre?: string;
 }
 
-export default function PacienteComboBox({ value, valueText , onChange }: PacienteComboBoxProps) {
+export default function PacienteComboBox({ value, valueText, onChange }: PacienteComboBoxProps) {
   const [pacientes, setPacientes] = useState<PacienteOption[]>([]);
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPaciente, setSelectedPaciente] = useState<PacienteOption | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Sincronizar el valor inicial o externo si se provee un ID
   useEffect(() => {
-    if (!value) {
-      setSelectedPaciente(null);
+    if (valueText) {
+      setQuery(valueText);
       return;
     }
-    // Opcional: Si el paciente seleccionado no está en la lista actual, 
-    // podrías hacer un fetch específico por ID si la API lo requiere.
-  }, [value]);
 
-  // Manejo de la búsqueda remota con Debounce
+    if (value && value !== 0) {
+      setQuery(value.toString());
+    }
+  }, [valueText, value]);
+
   useEffect(() => {
     const trimmedQuery = query.trim();
-    const parsedId = Number(trimmedQuery);
-    const esNumero = !isNaN(parsedId) && trimmedQuery.trim() !== '';
 
-    // Si tiene menos de 4 letras, limpiamos la lista de sugerencias y no consultamos
-    if (trimmedQuery.length < 4 && esNumero === false || value != 0) {
+    if (!trimmedQuery) {
       setPacientes([]);
+      setIsOpen(false);
       setIsLoading(false);
       return;
     }
-    
+
+    const querySinPrefijo = trimmedQuery.startsWith('#') ? trimmedQuery.slice(1).trim() : trimmedQuery;
+    const parsedId = Number(querySinPrefijo);
+    const esNumero = querySinPrefijo !== '' && !isNaN(parsedId);
+
+    if (!esNumero && querySinPrefijo.length < 4) {
+      setPacientes([]);
+      setIsOpen(false);
+      setIsLoading(false);
+      return;
+    }
 
     const timer = setTimeout(async () => {
       try {
         setIsLoading(true);
+
         const queryParams: BuscarPacientesParams = {};
 
         if (esNumero) {
           queryParams.id = parsedId;
         } else {
-          queryParams.nombre = trimmedQuery;
+          queryParams.nombre = querySinPrefijo;
         }
 
         const response = await api.get('/Pacientes/buscar', {
-            params: esNumero ? { id: queryParams.id } : { nombre: queryParams.nombre }
+          params: esNumero ? { id: queryParams.id } : { nombre: queryParams.nombre }
         });
 
-        setPacientes(response.data ?? []);
+        const resultados = response.data ?? [];
+        setPacientes(resultados);
+
+        if (esNumero && resultados.length > 0) {
+          const pacienteSeleccionado = resultados[0];
+          const nombreCompleto = `${pacienteSeleccionado.nombre} ${pacienteSeleccionado.apellido}`;
+          setIsOpen(false);
+          setQuery(nombreCompleto);
+          onChange(pacienteSeleccionado.id, nombreCompleto);
+          return;
+        }
+
         setIsOpen(true);
       } catch (error) {
         console.error('Error al consultar pacientes:', error);
         setPacientes([]);
+        setIsOpen(true);
       } finally {
         setIsLoading(false);
       }
-    }, 400); // Espera 400ms después de que el usuario deja de escribir
+    }, 400);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, onChange]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const text = event.target.value;
     setQuery(text);
 
-    if (value !== 0) {
-      onChange(0); // Reseteamos el valor si el usuario empieza a escribir
-    }
-
-    // Si el usuario borra el texto, reseteamos la selección
-    if (!text.trim() ) {
-      setSelectedPaciente(null);
-      onChange(0);
+    if (!text.trim()) {
+      onChange(0, '');
       setPacientes([]);
       setIsOpen(false);
     }
   };
 
   const handleSelect = (paciente: PacienteOption) => {
-    value=paciente.id;
-    valueText = `${paciente.nombre} ${paciente.apellido}`;
+    const nombreCompleto = `${paciente.nombre} ${paciente.apellido}`;
     setIsOpen(false);
-    setSelectedPaciente(paciente);
-    onChange(paciente.id);
-    setQuery(`${paciente.nombre} ${paciente.apellido}`);
+    onChange(paciente.id, nombreCompleto);
+    setQuery(nombreCompleto);
   };
 
   return (
-    <div className="relative rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <div className="relative rounded-xl ">
       <label className="mb-2 block text-sm font-semibold text-slate-700">
-        Paciente *
+        Paciente <span className="text-red-500">*</span>
       </label>
 
       <div className="relative">

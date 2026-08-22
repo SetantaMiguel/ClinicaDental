@@ -8,6 +8,7 @@ using Clinica.Services;
 using Clinica.Services.Services;
 using Clinica.Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
+using Clinica.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,8 +47,11 @@ builder.Services.AddSwaggerGen();
 // Inyección de dependencias para servicios
 builder.Services.AddScoped<IPacienteService, PacienteService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICatalogoCitaService, CatalogoCitaService>();
+builder.Services.AddScoped<ICitasService, CitasService>();
+builder.Services.AddScoped<ICitaReciboService, CitaReciboService>();
+builder.Services.AddScoped<IMonedaService, MonedaService>();
 
 builder.Services.AddCors(options =>
 {

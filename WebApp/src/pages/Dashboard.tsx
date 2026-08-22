@@ -1,30 +1,24 @@
-import Notify from '../components/common/Notify';
-import { useState,useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../components/Context/AuthContext';
+import { useNotify } from '../components/Context/NotifyContext';
+import ClinicalOverviewPanel from '../components/common/ClinicalOverviewPanel';
 
+export default function Dashboard() {
+  const { user } = useAuth();
+  const { success } = useNotify();
 
-export default function Dashboard() { 
-    const [showToast, setShowToast] = useState(false);
-    const { user } = useAuth();
-    
-    const handleTriggerToast = () => {
-        setShowToast(false);
-        setTimeout(() => setShowToast(true), 10);
-    };
-
-    useEffect(() => {
-            const timer = setTimeout(() => {
-                handleTriggerToast();
-            }, 0);
-            return () => clearTimeout(timer); 
-    }, [ ]);
+  
+  useEffect(() => {
+    success({
+      titulo: `¡Bienvenido, ${user?.username}!`,
+      position: 'top-right',
+    });
+  }, [user?.username, success]);
 
   return (
-    <div className="min-h-screen ">
-      <Notify descripcion="Sesión iniciada correctamente" titulo={`¡Bienvenido, ${user?.username}!`} 
-        tipo="success" position="bottom-right" isOpen={showToast} onClose={() => setShowToast(false)} />
+    <div className="">
+      <ClinicalOverviewPanel />
+    </div>
+  );
+}
 
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Panel de control</h1>
-
-  </div>)
-};

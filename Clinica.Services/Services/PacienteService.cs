@@ -3,71 +3,61 @@ using Clinica.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Clinica.Services.IServices;
 using Clinica.Core.DTOs.Filters;
+using Clinica.Services.Services;
 
-namespace Clinica.Services;
-
-public class PacienteService : IPacienteService
+namespace Clinica.Services
 {
-    private readonly ClinicaContext _context;
-
-    public PacienteService(ClinicaContext context)
+    public class PacienteService(ClinicaContext context) : Repository<Pacientes>(context), IPacienteService
     {
-        _context = context;
-    }
-
-    public async Task<PageResponse<Pacientes>> ObtenerTodos(PacienteFiltroDTO filtroDTO) 
-    {
-        var query = _context.Pacientes.AsQueryable();
+        public async Task<PageResponse<Pacientes>> ObtenerTodos(PacienteFiltroDTO filtroDTO) 
+        {
+            var query = _context.Pacientes.AsQueryable();
        
-        if (!string.IsNullOrEmpty(filtroDTO.Nombre))
-        {
-            query = query.Where(p => p.Nombre.Contains(filtroDTO.Nombre));
-        }
+            if (!string.IsNullOrEmpty(filtroDTO.Nombre))
+            {
+                query = query.Where(p => p.Nombre.Contains(filtroDTO.Nombre));
+            }
           
-        if (!string.IsNullOrEmpty(filtroDTO.Apellido))
-        {
-            query = query.Where(p => p.Apellido.Contains(filtroDTO.Apellido));
-        }
+            if (!string.IsNullOrEmpty(filtroDTO.Apellido))
+            {
+                query = query.Where(p => p.Apellido.Contains(filtroDTO.Apellido));
+            }
         
-        return new()
+            return new()
+            {
+                Data = await query.OrderBy(p => p.Id).Skip((filtroDTO.PageNumber - 1) * filtroDTO.PageSize)
+                    .Take(filtroDTO.PageSize).ToListAsync(),
+                PageNumber = filtroDTO.PageNumber,
+                PageSize = filtroDTO.PageSize,
+                TotalRecords = await query.CountAsync()
+            };
+
+        }     
+        public async Task<Pacientes> Crear(Pacientes paciente)
         {
-            Data = await query.Skip((filtroDTO.PageNumber - 1) * filtroDTO.PageSize)
-                .Take(filtroDTO.PageSize).ToListAsync(),
-            PageNumber = filtroDTO.PageNumber,
-            PageSize = filtroDTO.PageSize,
-            TotalRecords = await query.CountAsync()
-        };
-
-    }
-        
-    public async Task<Pacientes> Crear(Pacientes paciente)
-    {
-
-        _context.Pacientes.Add(paciente);
-        await _context.SaveChangesAsync();
-        return paciente;
-    }
-    public async Task<Pacientes?> ObtenerPorId(int id)
-    {
-        var paciente = await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-        return paciente;
-    }
-
-    public async Task<List<Pacientes>>  ObtenerPorId_NombreAsync(int? id, string? nombre) 
-    {
-        var query = _context.Pacientes.AsNoTracking();
-
-        if (id.HasValue && id.Value > 0)
+            return await AddAsync(paciente);
+        }
+        public async Task<Pacientes?> ObtenerPorId(int id)
         {
-            query = query.Where(p => p.Id == id.Value);
+            var paciente = await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            return paciente;
+        }
+        public async Task<List<Pacientes>>  ObtenerPorId_NombreAsync(int? id, string? nombre) 
+        {
+            var query = _context.Pacientes.AsNoTracking();
+
+            if (id.HasValue && id.Value > 0)
+            {
+                query = query.Where(p => p.Id == id.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(nombre))
+            {
+                query = query.Where(p => p.Nombre.ToUpper().StartsWith(nombre.ToUpper()));
+            }
+
+            return await query.ToListAsync();
         }
 
-        if (!string.IsNullOrWhiteSpace(nombre))
-        {
-            query = query.Where(p => p.Nombre.ToUpper().StartsWith(nombre.ToUpper()));
-        }
-
-        return await query.ToListAsync();
     }
-
 }

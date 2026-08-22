@@ -3,7 +3,7 @@ using Clinica.Core.Models;
 
 namespace Clinica.Services.IServices;
 
-public interface IPacienteService
+public interface IPacienteService : IRepository<Pacientes>
 {
     Task<PageResponse<Pacientes>>ObtenerTodos(PacienteFiltroDTO filtro);
     Task<Pacientes> Crear(Pacientes paciente);

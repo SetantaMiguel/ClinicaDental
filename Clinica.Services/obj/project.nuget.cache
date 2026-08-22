@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1Cauw1t93N8=",
+  "dgSpecHash": "9LrS4NlkQOU=",
   "success": true,
-  "projectFilePath": "d:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Services\\Clinica.Services.csproj",
+  "projectFilePath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Clinica.Services\\Clinica.Services.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Miguel\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Miguel\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

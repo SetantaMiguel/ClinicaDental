@@ -17,5 +17,6 @@ public class Pacientes
     public string Telefono { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Identificacion { get; set; } = string.Empty;
+    public virtual ICollection<Citas> ListaCitas { get; set; } = [];
 
 }

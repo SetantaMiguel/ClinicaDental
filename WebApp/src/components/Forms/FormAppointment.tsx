@@ -1,198 +1,360 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TipoCitaComboBox from "../CombosBox/TipoCitaComboBox";
 import PacienteComboBox from "../CombosBox/PacienteComboBox";
 import type { Cita } from "../../types/index.ts";
+import api from '../../api/axiosConfig';
+import { useNotify } from '../Context/NotifyContext';
 
 interface FormAppointmentProps {
   OnSuccess: (id: number, bEdicion: boolean) => void;
   idPaciente?: number;
+  idCita?: number;
 }
+
 const initialCita: Cita = {
-    fecha: '',
-    hora: '',
-    id: 0,
-    idPaciente: 0,
-    tipoCitaId: 0,
-    observaciones: ''
+  fechaInicio: '',
+  horaInicio: '',
+  fechaFin: '',
+  horaFin: '',
+  id: 0,
+  idPaciente: 0,
+  tipoCitaId: 0,
+  observaciones: ''
+};
+
+const DURACIONES_PREDEFINIDAS = [
+  { value: 15, label: '15 minutos' },
+  { value: 30, label: '30 minutos' },
+  { value: 60, label: '1 hora' },
+  { value: 120, label: '2 horas' },
+  { value: 180, label: '3 horas' },
+];
+
+const formatearFecha = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+const formatearHora = (date: Date) => {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${hours}:${minutes}`;
 };
 
 
+export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormAppointmentProps) {
+  const { success, error } = useNotify();
+  const [paso, setPaso] = useState<1 | 2>(1);
+  const [tipoCitaNombre, setTipoCitaNombre] = useState<string>('—');
+  const [cita, setCita] = useState<Cita>(initialCita);
+  const [pacienteNombre, setPacienteNombre] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [duracionMinutos, setDuracionMinutos] = useState<number>(30);
 
-export default function FormAppointment(_props: FormAppointmentProps) {
-    // Estado para controlar el paso actual (1 = Formulario, 2 = Resumen)
-    const [paso, setPaso] = useState<1 | 2>(1);
+  useEffect(() => {
+    if (idPaciente) {
+      setCita((prev) => ({ ...prev, idPaciente: idPaciente }));
+    }
 
-    // Estados para los campos del formulario
-    const [tipoCitaNombre, setTipoCitaNombre] = useState<string>('—');
-    const [Cita, setCita] = useState<Cita | null>(initialCita);
-    const [pacienteNombre, setPacienteNombre] = useState<string>('');
+    if (idCita) {
 
-    const handleCambioTipoCita = (id: number, nombre: string) => {
-        setCita((prev) => prev ? { ...prev, tipoCitaId: id } : null);
-        setTipoCitaNombre(nombre);
-    };
+      const fetchCita = async () => {
+        try {
 
-    const handleCambioPaciente = (id: number) => {
-        setCita((prev) => prev ? { ...prev, idPaciente: id } : null);
-    };
+          setIsLoading(true);
+          const response = await api.get(`/Citas/${idCita}`);
+          const rawData = response.data;
 
-    // Funciones de navegación
-    const irAlResumen = () => {
-        // Aquí podrías agregar validaciones antes de avanzar
-        if (!Cita?.idPaciente || !Cita.tipoCitaId || !Cita.fecha || !Cita.hora) {
-            return alert("Por favor, completa todos los campos obligatorios antes de continuar.");
+          const startDate = new Date(rawData.fechaInicio);
+          const endDate = new Date(rawData.fechaFin);
 
-            return;
+          // 2. Mapeamos y transformamos los valores a nuestra interfaz Cita
+          const citaData: Cita = {
+            id: rawData.id,
+            idPaciente: rawData.pacienteId,
+            tipoCitaId: rawData.tipoCitaId,
+
+            // 3. Separamos la fecha y la hora usando tus funciones
+            fechaInicio: formatearFecha(startDate),
+            horaInicio: formatearHora(startDate),
+            fechaFin: formatearFecha(endDate),
+            horaFin: formatearHora(endDate),
+
+            observaciones: rawData.observaciones || ''
+          };
+          setDuracionMinutos((endDate.getTime() - startDate.getTime()) / (1000 * 60)); // Calcula la duración en minutos
+          setCita(citaData);
+        } catch (err) {
+          error({
+            titulo: 'Error al cargar la cita',
+            descripcion: 'No se pudo cargar la información de la cita.',
+          });
+        } finally {
+          setIsLoading(false);
         }
-        setPaso(2);
-    };
+      };
 
-    const volverAlFormulario = () => {
-        setPaso(1);
-    };
+      fetchCita();
+    }
+  }, [idPaciente, idCita]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Guardando cita con los siguientes datos:", {
-            idPaciente: Cita?.idPaciente,
-            tipoCitaId: Cita?.tipoCitaId,
-            fecha: Cita?.fecha,
-            hora: Cita?.hora,
-            observaciones: Cita?.observaciones
+  useEffect(() => {
+    if (!cita.fechaInicio || !cita.horaInicio) return;
+
+    const [anio, mes, dia] = cita.fechaInicio.split('-').map(Number);
+    const [hora, minuto] = cita.horaInicio.split(':').map(Number);
+    const fechaInicio = new Date(anio, mes - 1, dia, hora, minuto, 0, 0);
+    const fechaFin = new Date(fechaInicio.getTime() + duracionMinutos * 60 * 1000);
+
+    setCita((prev) => ({
+      ...prev,
+      fechaFin: formatearFecha(fechaFin),
+      horaFin: formatearHora(fechaFin),
+    }));
+  }, [cita.fechaInicio, cita.horaInicio, duracionMinutos]);
+
+  const handleCambioTipoCita = (id: number, nombre: string) => {
+    setCita((prev) => ({ ...prev, tipoCitaId: id }));
+    setTipoCitaNombre(nombre);
+  };
+
+  const handleCambioPaciente = (id: number, nombre: string) => {
+    setCita((prev) => ({ ...prev, idPaciente: id }));
+    setPacienteNombre(nombre);
+  };
+
+  const irAlResumen = () => {
+    console.log('Datos de la cita:', cita);
+    if (!cita.idPaciente || !cita.tipoCitaId || !cita.fechaInicio || !cita.horaInicio) {
+      error({
+        titulo: 'Campos incompletos',
+        descripcion: 'Verifica haber seleccionado paciente, tipo de cita, fecha y hora.',
+      });
+      return;
+    }
+    setPaso(2);
+  };
+
+  const volverAlFormulario = () => setPaso(1);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!cita.idPaciente || !cita.tipoCitaId || !cita.fechaInicio || !cita.horaInicio) return;
+
+    const [anio, mes, dia] = cita.fechaInicio.split('-').map(Number);
+    const [hora, minuto] = cita.horaInicio.split(':').map(Number);
+    const fechaInicio = new Date(anio, mes - 1, dia, hora, minuto, 0, 0);
+    const fechaFin = new Date(fechaInicio.getTime() + duracionMinutos * 60 * 1000);
+
+    try {
+      setIsLoading(true);
+
+      const payload = {
+        id: cita.id,
+        PacienteId: cita.idPaciente,
+        TipoCitaId: cita.tipoCitaId,
+        FechaInicio: fechaInicio.toISOString(),
+        FechaFin: fechaFin.toISOString(),
+        Observaciones: cita.observaciones?.trim() || null,
+      };
+      const isEdicion = Boolean(idCita) || cita.id > 0;
+
+      if (isEdicion) {
+        // Ejecutamos PUT para actualizar
+        await api.put(`/Citas/${cita.id}`, payload);
+
+        // Enviamos true a OnSuccess para notificarle al padre que fue una edición
+        OnSuccess(cita.id, true);
+
+        success({
+          titulo: '¡Cita actualizada!',
+          descripcion: 'La cita fue modificada correctamente.',
         });
-        // Aquí iría tu lógica de guardado en la API
-        // _props.OnSuccess(nuevoId, false);
-    };
+      } else {
+        // Ejecutamos POST para crear
+        const response = await api.post('/Citas', payload);
 
-    return (
-        <div className="mx-auto w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        // Enviamos false porque es una creación nueva
+        OnSuccess(response.data?.id ?? cita.idPaciente, false);
 
-            {/* Encabezado dinámico según el paso */}
-            <div className="mb-6 border-b border-slate-100 pb-4">
-                <h2 className="text-xl font-bold text-slate-800">
-                    {paso === 1 ? 'Nueva cita' : 'Resumen de la cita'} 
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                    {paso === 1
-                        ? 'Completa los datos para la creación de una cita odontológica.'
-                        : 'Verifica que la información sea correcta antes de guardar.'}
-                </p>
+        success({
+          titulo: '¡Cita programada!',
+          descripcion: 'La cita fue creada correctamente.',
+        });
+      }
+      setCita({ ...initialCita, idPaciente: idPaciente ?? 0 });
+      setTipoCitaNombre('—');
+      setPacienteNombre('');
+      setPaso(1);
+    } catch (err: any) {
+      console.error('Error al guardar la cita:', err);
+      error({
+        titulo: 'Error',
+        descripcion: err.response?.data?.message || 'No se pudo guardar la cita.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const inputClassName = "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-gray-900 focus:ring-1 focus:ring-gray-900";
+  const labelClassName = "mb-1.5 block text-sm font-medium text-gray-700";
+
+  return (
+    <div className="mx-auto w-full max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+      <div className="mb-8 flex flex-col gap-4 border-b border-gray-100 pb-5 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+            {paso === 1 ? (idCita ? 'Reprogramar Cita' : 'Programar Cita') : 'Confirmar Detalles'}
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">
+            {paso === 1
+              ? 'Ingresa los datos correspondientes para agendar la cita.'
+              : 'Revisa cuidadosamente la información antes de guardar.'}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+          <span className={paso === 1 ? 'text-gray-900' : ''}>1. Datos</span>
+          <span className="text-gray-300">/</span>
+          <span className={paso === 2 ? 'text-gray-900' : ''}>2. Resumen</span>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        {paso === 1 && (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
+
+              <div>
+                <PacienteComboBox
+                  value={cita.idPaciente}
+                  onChange={handleCambioPaciente}
+                  valueText={pacienteNombre}
+                />
+              </div>
+
+              <div>
+                <TipoCitaComboBox
+                  value={cita.tipoCitaId}
+                  onChange={handleCambioTipoCita}
+                />
+              </div>
+
+              <div>
+                <label className={labelClassName}>Fecha de inicio <span className="text-red-500">*</span></label>
+                <input
+                  type="date"
+                  value={cita.fechaInicio || ''}
+                  onChange={(e) => setCita((prev) => ({ ...prev, fechaInicio: e.target.value }))}
+                  className={inputClassName}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={labelClassName}>Hora de inicio <span className="text-red-500">*</span></label>
+                <input
+                  type="time"
+                  value={cita.horaInicio || ''}
+                  onChange={(e) => setCita((prev) => ({ ...prev, horaInicio: e.target.value }))}
+                  className={inputClassName}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={labelClassName}>Duración estimada <span className="text-red-500">*</span></label>
+                <select
+                  value={duracionMinutos}
+                  onChange={(e) => setDuracionMinutos(Number(e.target.value))}
+                  className={inputClassName}
+                >
+                  {DURACIONES_PREDEFINIDAS.map((duracion) => (
+                    <option key={duracion.value} value={duracion.value}>
+                      {duracion.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-2 mt-2">
+                <label className={labelClassName}>Observaciones (Opcional)</label>
+                <textarea
+                  rows={3}
+                  value={cita.observaciones || ''}
+                  onChange={(e) => setCita((prev) => ({ ...prev, observaciones: e.target.value }))}
+                  placeholder="Añade detalles adicionales sobre la consulta..."
+                  className={`${inputClassName} resize-none`}
+                />
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit}>
+            <div className="mt-8 flex justify-end">
+              <button
+                type="button"
+                onClick={irAlResumen}
+                className="w-full rounded-md bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 md:w-auto"
+              >
+                Continuar al resumen
+              </button>
+            </div>
+          </div>
+        )}
 
-                {/* ================= PASO 1: FORMULARIO ================= */}
-                {paso === 1 && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-
-                        <PacienteComboBox
-                            value={Cita?.idPaciente}
-                            onChange={handleCambioPaciente}
-                            valueText={pacienteNombre}
-                        />
-                         <p className="text-sm text-slate-500">Paciente seleccionado: {pacienteNombre}</p>
-                        <TipoCitaComboBox
-                            value={Cita?.tipoCitaId}
-                            onChange={handleCambioTipoCita}
-                        />
-
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <label className="mb-2 block text-sm font-semibold text-slate-700">Fecha y hora *</label>
-                            <div className="grid gap-3 md:grid-cols-2">
-                                <input
-                                    type="date"
-                                    value={Cita?.fecha || ''}
-                                    onChange={(e) => setCita((prev) => prev ? { ...prev, fecha: e.target.value } : null)}
-
-                                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                                    required
-                                />
-                                <input
-                                    type="time"
-                                    value={Cita?.hora || ''}
-                                    onChange={(e) => setCita((prev) => prev ? { ...prev, hora: e.target.value } : null)}
-                                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <label className="mb-2 block text-sm font-semibold text-slate-700">Observaciones (Opcional)</label>
-                            <textarea
-                                rows={3}
-                                value={Cita?.observaciones || ''}
-                                onChange={(e) => setCita((prev) => prev ? { ...prev, observaciones: e.target.value } : null)}
-                                placeholder="Escribe una observación breve..."
-                                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                            />
-                        </div>
-
-                        <div className="pt-4">
-                            <button
-                                type="button"
-                                onClick={irAlResumen}
-                                className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-                            >
-                                Continuar
-                            </button>
-                        </div>
-                    </div>
+        {paso === 2 && (
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="overflow-hidden rounded-lg border border-gray-200">
+              <dl className="divide-y divide-gray-100 text-sm">
+                <div className="grid grid-cols-3 gap-4 px-5 py-4 bg-gray-50/50">
+                  <dt className="font-medium text-gray-500">Paciente</dt>
+                  <dd className="col-span-2 font-semibold text-gray-900">{pacienteNombre || `#${cita.idPaciente}`}</dd>
+                </div>
+                <div className="grid grid-cols-3 gap-4 px-5 py-4">
+                  <dt className="font-medium text-gray-500">Tipo de cita</dt>
+                  <dd className="col-span-2 font-semibold text-gray-900">{tipoCitaNombre}</dd>
+                </div>
+                <div className="grid grid-cols-3 gap-4 px-5 py-4 bg-gray-50/50">
+                  <dt className="font-medium text-gray-500">Horario de inicio</dt>
+                  <dd className="col-span-2 text-gray-900">{cita.fechaInicio} a las {cita.horaInicio}</dd>
+                </div>
+                <div className="grid grid-cols-3 gap-4 px-5 py-4">
+                  <dt className="font-medium text-gray-500">Horario de fin</dt>
+                  <dd className="col-span-2 text-gray-900">{cita.fechaFin} a las {cita.horaFin}</dd>
+                </div>
+                {cita.observaciones && (
+                  <div className="grid grid-cols-3 gap-4 px-5 py-4 bg-gray-50/50">
+                    <dt className="font-medium text-gray-500">Observaciones</dt>
+                    <dd className="col-span-2 text-gray-700">{cita.observaciones}</dd>
+                  </div>
                 )}
+              </dl>
+            </div>
 
-                {/* ================= PASO 2: RESUMEN ================= */}
-                {paso === 2 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-
-                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                            <h3 className="text-sm font-semibold text-slate-700 mb-4 border-b border-slate-200 pb-2">Detalles confirmados</h3>
-
-                            <div className="space-y-3 text-sm text-slate-600">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg bg-white px-4 py-3 shadow-sm border border-slate-100">
-                                    <span className="text-slate-500">Paciente</span>
-                                    <span className="font-semibold text-slate-800">{Cita?.idPaciente}</span>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg bg-white px-4 py-3 shadow-sm border border-slate-100">
-                                    <span className="text-slate-500">Tipo de cita</span>
-                                    <span className="font-semibold text-slate-800">{tipoCitaNombre}</span>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg bg-white px-4 py-3 shadow-sm border border-slate-100">
-                                    <span className="text-slate-500">Fecha y Hora</span>
-                                    <span className="font-semibold text-slate-800">{Cita?.fecha} a las {Cita?.hora}</span>
-                                </div>
-
-                                {Cita?.observaciones && (
-                                    <div className="flex flex-col rounded-lg bg-white px-4 py-3 shadow-sm border border-slate-100 mt-2">
-                                        <span className="text-slate-500 mb-1">Observaciones</span>
-                                        <span className="text-slate-800">{Cita?.observaciones}</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
-                            <button
-                                type="button"
-                                onClick={volverAlFormulario}
-                                className="w-full sm:w-1/3 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                            >
-                                Volver a editar
-                            </button>
-
-                            <button
-                                type="submit"
-                                className="w-full sm:w-2/3 rounded-lg bg-slate-800 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
-                            >
-                                Confirmar y Guardar cita
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-            </form>
-
-        </div>
-    );
+            <div className="mt-8 flex flex-col-reverse gap-3 md:flex-row md:justify-end">
+              <button
+                type="button"
+                onClick={volverAlFormulario}
+                className="rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+              >
+                Volver a editar
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="rounded-md bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Guardando...' : 'Confirmar y guardar'}
+              </button>
+            </div>
+          </div>
+        )}
+      </form>
+    </div>
+  );
 }

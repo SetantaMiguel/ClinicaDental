@@ -3,38 +3,42 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './pages/Layout';
 import Login from './components/auth/Login';
-import {AuthProvider} from './components/Context/AuthContext';
-
+import { AuthProvider } from './components/Context/AuthContext';
+import { Toaster } from 'sileo';
+import { ConfirmProvider } from './components/Context/ConfirmProvider';
+import { NotifyProvider } from './components/Context/NotifyContext';
 
 function App() {
-
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={
-            <Login  />
-          } />
+      <NotifyProvider>
+        <ConfirmProvider>
+          <BrowserRouter>
+            <Toaster position="bottom-right" />
+            <Routes>
+              <Route path="/login" element={<Login />} />
 
-          <Route element={<Layout />}>
-            {routes.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={
-                  route.isPrivate ? (
-                    <ProtectedRoute >
-                      <route.element  />
-                    </ProtectedRoute>
-                  ) : (
-                    <route.element />
-                  )
-                }
-              />
-            ))}
-          </Route>
-        </Routes>
-      </BrowserRouter>
+            <Route element={<Layout />}>
+              {routes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={
+                    route.isPrivate ? (
+                      <ProtectedRoute>
+                        <route.element />
+                      </ProtectedRoute>
+                    ) : (
+                      <route.element />
+                    )
+                  }
+                />
+              ))}
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        </ConfirmProvider>
+      </NotifyProvider>
     </AuthProvider>
   );
 }
