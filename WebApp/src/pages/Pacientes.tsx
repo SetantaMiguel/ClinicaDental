@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Modal from '../components/common/Modal.tsx';
 import FormPatient from '../components/Forms/FormPatient';
 import type { Paciente, PagePrompt } from '../types/index.ts';
-import { UserRoundPlus, Search, UserPen, HeartPlus, ChevronRight, Plus } from 'lucide-react';
+import { UserRoundPlus, Search, UserPen, CalendarClock, ChevronRight, BookUser } from 'lucide-react';
 import api from '../api/axiosConfig.ts';
 import { AxiosError } from 'axios';
 import Popover from '../components/common/Popover.tsx';
@@ -13,8 +13,8 @@ import FormAppointment from '../components/Forms/FormAppointment.tsx';
 import { useNotify } from '../components/Context/NotifyContext';
 
 export default function PacientesPage() {
-  const { success, error } = useNotify();
 
+  const { success, error } = useNotify();
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -99,41 +99,38 @@ export default function PacientesPage() {
       render: (p: Paciente) => (
         <>
           <button className="text-blue-600 hover:text-blue-800 font-medium" onClick={() => handleOpenModal(p.id)}><UserPen /></button>
-          <button className="ml-4 text-green-600 hover:text-green-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><HeartPlus /></button>
+          <button className="ml-4 text-green-600 hover:text-green-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><CalendarClock /></button>
+          <button className="ml-4 text-blue-600 hover:text-blue-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><BookUser /></button>
         </>
       )
     },
   ];
 
+  //Abre el modal para agregar o editar un paciente
   const handleOpenModal = (id?: number) => {
     setSelectedPacienteId(id);
-    setIsModalOpen(true);
+    setIsModalOpen(!isModalOpen);
   };
 
+  // Abre el modal para gestionar Cita
   const handleOpenModalCita = (id?: number) => {
     setSelectedPacienteId(id);
-    setIsModalOpenCita(true);
+    setIsModalOpenCita(!isModalOpenCita);
   };
 
-  const handleCloseModalCita = () => {
-    setIsModalOpenCita(false);
-  }
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  }
-
+  //Al agregar o editar paciente.
   const handleFormSuccess = (id: number, isEdit: boolean) => {
-    handleCloseModal();
+    setIsModalOpen(!isModalOpen);
     success({
       titulo: "¡Operación exitosa!",
       descripcion: `Paciente ${isEdit ? "actualizado" : "agregado"} correctamente con ID: ${id}`,
     });
     getPacientes();
   }
-
+  
+  //Al agregar o editar cita.
   const handleFormSuccessCita = (id: number, isEdit: boolean) => {
-    handleCloseModalCita();
+    setIsModalOpenCita(!isModalOpenCita);
     success({
       titulo: "¡Operación exitosa!",
       descripcion: `Cita ${isEdit ? "actualizada" : "agregada"} correctamente con ID: ${id}`,
@@ -144,11 +141,11 @@ export default function PacientesPage() {
   return (
     <div className="relative">
 
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}
+      <Modal isOpen={isModalOpen} onClose={()=>{setIsModalOpen(!isModalOpen)}}
         children={<FormPatient OnSuccess={handleFormSuccess}
           idPaciente={selectedPacienteId} />} />
 
-      <Modal isOpen={isModalOpenCita} onClose={handleCloseModalCita}
+      <Modal isOpen={isModalOpenCita} onClose={()=>{setIsModalOpenCita(!isModalOpen)}}
         children={<FormAppointment OnSuccess={handleFormSuccessCita} idPaciente={selectedPacienteId} />} />
 
       <h1 className="text-2xl font-bold text-gray-800 ">Gestión de Pacientes</h1>

@@ -56,12 +56,12 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
   const [duracionMinutos, setDuracionMinutos] = useState<number>(30);
 
   useEffect(() => {
+    console.log('idPaciente:', idPaciente, 'idCita:', idCita);
     if (idPaciente) {
       setCita((prev) => ({ ...prev, idPaciente: idPaciente }));
     }
 
     if (idCita) {
-
       const fetchCita = async () => {
         try {
 
@@ -97,7 +97,6 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
           setIsLoading(false);
         }
       };
-
       fetchCita();
     }
   }, [idPaciente, idCita]);

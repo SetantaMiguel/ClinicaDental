@@ -1,4 +1,7 @@
-import { Users, Calendar, Home, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, Calendar, Home, Settings,
+   ChevronLeft, ChevronRight,
+   Table,CalendarDays, 
+   Icon} from 'lucide-react';
 import CloseSession  from '../auth/CloseSession';
 import NavItem from './NavItem';
 
@@ -15,11 +18,18 @@ export default function SlideBar({ isExpanded, setIsExpanded }: SlideBarProps) {
       icon: <Users size={22} />, 
       label: 'Pacientes',
       subItems: [
-        { label: 'Listado', ruta: '/pacientes' },
+        { label: 'Listado', ruta: '/pacientes', icon:<Table size={22} /> },
         //{ label: 'Historial Clínico', ruta: '/pacientes/historial' },
       ]
     },
-    { icon: <Calendar size={22} />, ruta: '/citas', label: 'Citas' },
+    { 
+      icon: <Calendar size={22} />, 
+      label: 'Citas',
+      subItems : [
+          { label: 'Calendario', ruta: '/citas',icon:<CalendarDays size={22}/> },
+          { label: 'Listado', ruta: '/citasListado', icon:<Table size={22} />}
+      ]
+    },
     { 
       icon: <Settings size={22}  />, 
       label: 'Configuración',

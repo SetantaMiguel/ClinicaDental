@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../components/Context/AuthContext';
 import { useNotify } from '../components/Context/NotifyContext';
-import ClinicalOverviewPanel from '../components/common/ClinicalOverviewPanel';
+import ClinicalOverviewPanel from '../components/common/Citas/ClinicalOverviewPanel';
 
 export default function Dashboard() {
   const { user } = useAuth();

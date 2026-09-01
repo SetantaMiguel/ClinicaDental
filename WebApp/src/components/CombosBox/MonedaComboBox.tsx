@@ -10,10 +10,12 @@ interface MonedaOption {
 
 export default function MonedaComboBox({ 
     value,
-    onChange 
+    onChange,
+    isReadOnly = false 
 }: { 
     value: number | undefined; 
     onChange: (id: number, simbolo: string) => void 
+    isReadOnly: boolean
 }) {
     const [monedas, setMonedas] = useState<MonedaOption[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -56,6 +58,7 @@ export default function MonedaComboBox({
     }, [value, monedas]);
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+
         const selectedId = Number(e.target.value);
         const opcionSeleccionada = monedas.find(moneda => moneda.idMoneda === selectedId);
 
@@ -65,15 +68,15 @@ export default function MonedaComboBox({
     };
 
     return (
-        <div className="rounded-xl">
+        <div className="rounded-xl" >
             <label className="mb-2 block text-sm font-semibold text-slate-700">
                 Moneda <span className="text-red-500">*</span>    
             </label>
             <select
                 className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                disabled={isLoading}
+                disabled={isLoading || isReadOnly}
                 value={value ?? ""} 
-                onChange={handleSelectChange}
+                onChange={handleSelectChange}                
             >
                 <option value="" disabled>
                     {isLoading ? 'Cargando monedas...' : 'Selecciona una moneda'}

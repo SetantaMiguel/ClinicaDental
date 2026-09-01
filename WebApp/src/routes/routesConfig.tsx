@@ -2,14 +2,15 @@
 import Dashboard from '../pages/Dashboard';
 import Pacientes from '../pages/Pacientes';
 import React from 'react';
-import Citas from '../pages/Cita';
+import Citas from '../pages/CitasCalendar';
 import ConfigSistema from '../pages/ServiciosClinica';
+import CitasResumen from '../pages/CitasResumen';
 
 export interface RouteConfig {
   path: string;
   element: React.ComponentType<any>;
   isPrivate: boolean;
-  label?: string; 
+  label?: string;
 }
 
 export const routes: RouteConfig[] = [
@@ -18,5 +19,5 @@ export const routes: RouteConfig[] = [
   { path: '/pacientes', element: Pacientes, isPrivate: true, label: 'Pacientes' },
   { path: '/citas', element: Citas, isPrivate: true, label: 'Citas' },
   { path: '/servicios', element: ConfigSistema, isPrivate: true, label: 'Servicios Clinica' },
-
+  { path: '/citasListado', element: CitasResumen, isPrivate: true, label: 'Citas resumen' },
 ];

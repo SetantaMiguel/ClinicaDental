@@ -225,7 +225,7 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCatalogCita, idCit
                     />
                 </div>
 
-                <MonedaComboBox value={citaRecibo.idMoneda} onChange={handleCambioMoneda} />
+                <MonedaComboBox value={citaRecibo.idMoneda} onChange={handleCambioMoneda} isReadOnly={isReadOnly} />
 
                 <div className="flex flex-col gap-3 font-sans p-4">
                     <h3 className="text-sm font-bold text-slate-700">

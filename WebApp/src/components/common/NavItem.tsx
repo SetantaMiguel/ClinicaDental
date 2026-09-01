@@ -41,7 +41,10 @@ export default function NavItem({ item, isExpanded }: { item: any, isExpanded: b
               to={sub.ruta} 
               className={({ isActive }) => `p-2 text-sm rounded-lg transition-colors ${isActive ? 'text-blue-600 font-bold' : 'text-gray-500 hover:text-blue-600'}`}
             >
-              {sub.label}
+              <div className='flex'>
+                <span className='flex-1'>{sub.label}</span>  
+                <span className="flex-none">{sub.icon}</span>
+              </div>
             </NavLink>
           ))}
         </div>
