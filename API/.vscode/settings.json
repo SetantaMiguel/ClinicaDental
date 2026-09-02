@@ -1,3 +1,4 @@
 {
-    "appService.defaultWebAppToDeploy": "/subscriptions/3945da80-11f1-4ed0-9a00-97296d301d48/resourceGroups/appsvc_windows_mexicocentral/providers/Microsoft.Web/sites/api-odonto-health"
+    "appService.defaultWebAppToDeploy": "/subscriptions/3945da80-11f1-4ed0-9a00-97296d301d48/resourceGroups/appsvc_windows_mexicocentral/providers/Microsoft.Web/sites/api-odonto-health",
+    "appService.deploySubpath": "publish"
 }

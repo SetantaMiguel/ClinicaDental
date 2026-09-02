@@ -57,27 +57,11 @@ public class PacientesController(ClinicaContext context, IPacienteService pacien
             return Conflict(new { message = "Ya existe un paciente con este número de teléfono." });        
         }
 
-        var PacienteT = AsignarDT(paciente);
+        var PacienteT = _pacienteService.AsignarDT(paciente);
 
         var nuevoPaciente = await _pacienteService.Crear(PacienteT);
 
         return CreatedAtAction(nameof(GetPacientes), new { id = nuevoPaciente.Id });
-    }
-
-    public Pacientes AsignarDT(PacienteDTO paciente)
-    {
-        var PacienteT = new Pacientes
-        {
-            Nombre = paciente.Nombre,
-            Apellido = paciente.Apellido,
-            FechaNacimiento = paciente.FechaNacimiento,
-            Telefono = paciente.Telefono,
-            Email = paciente.Email,
-            Identificacion = paciente.Identificacion,
-            FIngreso = DateTime.Now
-        };
-
-        return PacienteT;
     }
 
     [HttpPut("{id}")]
@@ -94,7 +78,7 @@ public class PacientesController(ClinicaContext context, IPacienteService pacien
             
             if (pacienteExistente == null) return NotFound();
 
-            var pacienteActualizado = AsignarDT(paciente);
+            var pacienteActualizado = _pacienteService.AsignarDT(paciente);
 
             pacienteActualizado.Id = id;
 

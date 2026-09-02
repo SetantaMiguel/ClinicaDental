@@ -1,3 +1,4 @@
+using Clinica.Core.DTOs;
 using Clinica.Core.DTOs.Filters;
 using Clinica.Core.Models;
 
@@ -9,4 +10,5 @@ public interface IPacienteService : IRepository<Pacientes>
     Task<Pacientes> Crear(Pacientes paciente);
     Task<Pacientes?> ObtenerPorId(int id);
     Task<List<Pacientes>> ObtenerPorId_NombreAsync(int? id, string? nombre);
+    Pacientes AsignarDT(PacienteDTO paciente);
 }

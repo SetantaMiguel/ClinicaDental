@@ -16,6 +16,7 @@ namespace Clinica.Api.Controllers{
             || string.IsNullOrWhiteSpace(request.Password))
                 return BadRequest(new { message = "Usuario y contraseña requeridos." });
 
+
             if (await _authService.ValidarUsuario(request.Username, request.Password))
             {
                 var token = _authService.GenerarToken(request.Username);

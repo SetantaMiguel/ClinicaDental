@@ -1,12 +1,12 @@
-using Clinica.Data;
-using Microsoft.EntityFrameworkCore;
-using Clinica.Services.IServices;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Clinica.Services.Services;
 using Clinica.Core.Models.Identity;
+using Clinica.Data;
+using Clinica.Services.IServices;
+using Clinica.Services.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +42,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
@@ -71,19 +72,23 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment() || true) // Pon 'true' temporalmente para forzarlo en producción
+{
+    app.UseDeveloperExceptionPage();
+}
 app.UseCors("PermitirReact");
 
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Api Dental");
-    });
 
-}
+app.UseSwagger();
+app.MapOpenApi();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint(
+        "/swagger/v1/swagger.json",
+        "Clinica.Api v1"
+    );
+});
 
 app.UseHttpsRedirection();
 

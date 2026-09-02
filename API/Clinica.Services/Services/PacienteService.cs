@@ -3,25 +3,26 @@ using Clinica.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Clinica.Services.IServices;
 using Clinica.Core.DTOs.Filters;
+using Clinica.Core.DTOs;
 
 namespace Clinica.Services.Services
 {
     public class PacienteService(ClinicaContext context) : Repository<Pacientes>(context), IPacienteService
     {
-        public async Task<PageResponse<Pacientes>> ObtenerTodos(PacienteFiltroDTO filtroDTO) 
+        public async Task<PageResponse<Pacientes>> ObtenerTodos(PacienteFiltroDTO filtroDTO)
         {
             var query = _context.Pacientes.AsQueryable();
-       
+
             if (!string.IsNullOrEmpty(filtroDTO.Nombre))
             {
                 query = query.Where(p => EF.Functions.ILike(p.Nombre, $"{filtroDTO.Nombre}%"));
             }
-          
+
             if (!string.IsNullOrEmpty(filtroDTO.Apellido))
             {
                 query = query.Where(p => EF.Functions.ILike(p.Apellido, $"{filtroDTO.Apellido}%"));
             }
-        
+
             return new()
             {
                 Data = await query.OrderBy(p => p.Id).Skip((filtroDTO.PageNumber - 1) * filtroDTO.PageSize)
@@ -31,7 +32,7 @@ namespace Clinica.Services.Services
                 TotalRecords = await query.CountAsync()
             };
 
-        }     
+        }
         public async Task<Pacientes> Crear(Pacientes paciente)
         {
             return await AddAsync(paciente);
@@ -41,7 +42,7 @@ namespace Clinica.Services.Services
             var paciente = await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
             return paciente;
         }
-        public async Task<List<Pacientes>>  ObtenerPorId_NombreAsync(int? id, string? nombre) 
+        public async Task<List<Pacientes>> ObtenerPorId_NombreAsync(int? id, string? nombre)
         {
             var query = _context.Pacientes.AsNoTracking();
 
@@ -56,6 +57,21 @@ namespace Clinica.Services.Services
             }
 
             return await query.ToListAsync();
+        }
+        public Pacientes AsignarDT(PacienteDTO paciente)
+        {
+            var PacienteT = new Pacientes
+            {
+                Nombre = paciente.Nombre,
+                Apellido = paciente.Apellido,
+                FechaNacimiento = paciente.FechaNacimiento,
+                Telefono = paciente.Telefono,
+                Email = paciente.Email,
+                Identificacion = paciente.Identificacion,
+                FIngreso = DateTime.Now
+            };
+
+            return PacienteT;
         }
 
     }

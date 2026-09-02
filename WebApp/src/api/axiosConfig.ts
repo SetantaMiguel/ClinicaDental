@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const api = axios.create({
-  baseURL: 'http://localhost:5198/api'
+  baseURL: `${apiUrl}/api`
 });
 
 // Interceptor para peticiones (Request)

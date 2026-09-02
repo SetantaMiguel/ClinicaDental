@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5eUKrteX7cI=",
+  "dgSpecHash": "5dQGM6eYJlo=",
   "success": true,
-  "projectFilePath": "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Core\\Clinica.Core.csproj",
+  "projectFilePath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Core\\Clinica.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Miguel\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\9.0.0\\microsoft.aspnetcore.cryptography.internal.9.0.0.nupkg.sha512",
     "C:\\Users\\Miguel\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\9.0.0\\microsoft.aspnetcore.cryptography.keyderivation.9.0.0.nupkg.sha512",
