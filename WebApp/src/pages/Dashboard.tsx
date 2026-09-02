@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '../components/Context/AuthContext';
 import { useNotify } from '../components/Context/NotifyContext';
 import ClinicalOverviewPanel from '../components/common/Citas/ClinicalOverviewPanel';

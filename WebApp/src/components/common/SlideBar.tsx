@@ -1,7 +1,7 @@
 import { Users, Calendar, Home, Settings,
    ChevronLeft, ChevronRight,
-   Table,CalendarDays, 
-   Icon} from 'lucide-react';
+   Table,CalendarDays
+  } from 'lucide-react';
 import CloseSession  from '../auth/CloseSession';
 import NavItem from './NavItem';
 
