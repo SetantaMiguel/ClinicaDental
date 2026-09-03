@@ -5464,11 +5464,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Api\\Clinica.Api.csproj",
+      "projectUniqueName": "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Api\\Clinica.Api.csproj",
       "projectName": "Clinica.Api",
-      "projectPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Api\\Clinica.Api.csproj",
+      "projectPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Api\\Clinica.Api.csproj",
       "packagesPath": "C:\\Users\\Miguel\\.nuget\\packages\\",
-      "outputPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Api\\obj\\",
+      "outputPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -5490,11 +5490,11 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Data\\Clinica.Data.csproj": {
-              "projectPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Data\\Clinica.Data.csproj"
+            "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Data\\Clinica.Data.csproj": {
+              "projectPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Data\\Clinica.Data.csproj"
             },
-            "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Services\\Clinica.Services.csproj": {
-              "projectPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\Api\\Clinica.Services\\Clinica.Services.csproj"
+            "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Services\\Clinica.Services.csproj": {
+              "projectPath": "D:\\Programacion\\Proyectos\\ClinicaDental\\API\\Clinica.Services\\Clinica.Services.csproj"
             }
           }
         }
