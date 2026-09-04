@@ -73,6 +73,7 @@ export default function FormPatient({ OnSuccess, idPaciente }: FormPatientProps)
                 telefono: data.telefono,
                 email: data.email,
                 fechaNacimiento: data.fechaNacimiento ? data.fechaNacimiento : null,
+                identificacion: data.identificacion,
                 id: data.id
             });
         } catch (error) {

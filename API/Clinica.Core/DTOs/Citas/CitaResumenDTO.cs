@@ -1,4 +1,5 @@
-using Clinica.Core.Models;
+
+using Clinica.Core.DTOs.Recibo;
 
 namespace Clinica.Core.DTOs.Citas
 {
@@ -14,6 +15,6 @@ namespace Clinica.Core.DTOs.Citas
         public string TipoCitaNombre { get; set; } = string.Empty;
         public string EstadoCitaCodigo { get; set; } = string.Empty;
         public string EstadoCitaDescripcion { get; set; } = string.Empty;
-        public CitaRecibo? CitaRecibo { get; set; }
+        public ReciboDto? CitaRecibo { get; set; }
     }
 }

@@ -5,6 +5,7 @@ import React from 'react';
 import Citas from '../pages/CitasCalendar';
 import ConfigSistema from '../pages/ServiciosClinica';
 import CitasResumen from '../pages/CitasResumen';
+import ClinicalHistory from '../pages/ClinicalHistory';
 
 export interface RouteConfig {
   path: string;
@@ -20,4 +21,5 @@ export const routes: RouteConfig[] = [
   { path: '/citas', element: Citas, isPrivate: true, label: 'Citas' },
   { path: '/servicios', element: ConfigSistema, isPrivate: true, label: 'Servicios Clinica' },
   { path: '/citasListado', element: CitasResumen, isPrivate: true, label: 'Citas resumen' },
+  { path: '/historialClinico/:id', element: ClinicalHistory, isPrivate: true, label: 'Historial Clínico' },
 ];

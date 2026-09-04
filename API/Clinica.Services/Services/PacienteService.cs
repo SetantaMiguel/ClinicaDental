@@ -3,7 +3,9 @@ using Clinica.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Clinica.Services.IServices;
 using Clinica.Core.DTOs.Filters;
-using Clinica.Core.DTOs;
+using Clinica.Core.DTOs.Pacientes;
+using Clinica.Core.DTOs.Citas;
+using Clinica.Core.DTOs.Recibo;
 
 namespace Clinica.Services.Services
 {
@@ -72,6 +74,56 @@ namespace Clinica.Services.Services
             };
 
             return PacienteT;
+        }
+
+        public async Task<HistorialPacienteDto> DameHistorial(int id)
+        {
+            var paciente = await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception($"Paciente con ID {id} no encontrado.");
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            paciente.ListaCitas = await _context.Citas.AsNoTracking()
+                                                        .Include(c => c.TipoCita)
+                                                        .Include(c => c.Recibo)
+                                                        .Include(c => c.Recibo.Moneda)
+                                                        .Include(c => c.EstadoCita)
+                                                        .Where(c => c.PacienteId == id).ToListAsync();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+            var Historial = new HistorialPacienteDto
+            {
+                Id = paciente.Id,
+                Nombre = paciente.Nombre,
+                Apellido = paciente.Apellido,
+                FechaNacimiento = paciente.FechaNacimiento,
+                Telefono = paciente.Telefono,
+                Email = paciente.Email,
+                Identificacion = paciente.Identificacion,
+                FIngreso = paciente.FIngreso,
+                Citas = [.. paciente.ListaCitas.Select(c => new CitaResumenDTO
+                {
+                    Id = c.Id,
+                    TipoCitaId = c.TipoCitaId,
+                    FechaInicio = c.FechaInicio,
+                    FechaFin = c.FechaFin,
+                    Observaciones = c.Observaciones,
+                    EstadoCitaCodigo = c.EstadoCitaCodigo,
+                    TipoCitaNombre = c.TipoCita?.NombreCita ?? string.Empty,
+                    EstadoCitaDescripcion = c.EstadoCita?.Descripcion ?? string.Empty,
+                    CitaRecibo = c.Recibo != null ? new ReciboDto
+                    {
+                        IdRecibo = c.Recibo.IdRecibo,
+                        MontoNeto = c.Recibo.MontoNeto,
+                        Observaciones = c.Recibo.Observaciones,
+                        MedioPago = c.Recibo.MedioPago,
+                        IdMoneda = c.Recibo.IdMoneda,
+                        Moneda = c.Recibo.Moneda,
+                        FIngreso = c.Recibo.FIngreso
+                    } : null
+                })],
+                LastCitaDate = paciente.ListaCitas.Count != 0 ? paciente.ListaCitas.Max(c => c.FechaInicio) : DateTime.MinValue,
+                MontoTotalPago = paciente.ListaCitas.Sum(c => c.Recibo != null ? c.Recibo.MontoNeto : 0)
+            };  
+            
+            return Historial;
         }
 
     }

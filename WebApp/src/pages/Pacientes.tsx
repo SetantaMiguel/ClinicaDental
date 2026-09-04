@@ -11,6 +11,7 @@ import FormFilterPatient from '../components/Forms/FormFilterPatient.tsx';
 import type { PacienteFiltro } from '../types/index.ts';
 import FormAppointment from '../components/Forms/FormAppointment.tsx';
 import { useNotify } from '../components/Context/NotifyContext';
+import { NavLink } from 'react-router-dom';
 
 export default function PacientesPage() {
 
@@ -97,10 +98,12 @@ export default function PacientesPage() {
       header: 'Acciones',
       key: 'acciones',
       render: (p: Paciente) => (
-        <>
+        <> 
           <button className="text-blue-600 hover:text-blue-800 font-medium" onClick={() => handleOpenModal(p.id)}><UserPen /></button>
           <button className="ml-4 text-green-600 hover:text-green-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><CalendarClock /></button>
-          <button className="ml-4 text-blue-600 hover:text-blue-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><BookUser /></button>
+          <NavLink className="ml-4 text-green-600 hover:text-green-800 font-medium" to={`/historialClinico/${p.id}`}>
+            <BookUser />
+          </NavLink>
         </>
       )
     },

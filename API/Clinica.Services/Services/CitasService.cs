@@ -1,5 +1,6 @@
 using Clinica.Core.DTOs.Citas;
 using Clinica.Core.DTOs.Filters;
+using Clinica.Core.DTOs.Recibo;
 using Clinica.Core.Models;
 using Clinica.Data;
 using Clinica.Services.IServices;
@@ -26,7 +27,16 @@ namespace Clinica.Services.Services
                     TipoCitaNombre = c.TipoCita != null ? c.TipoCita.NombreCita : string.Empty,
                     EstadoCitaCodigo = c.EstadoCitaCodigo,
                     EstadoCitaDescripcion = c.EstadoCita != null ? c.EstadoCita.Descripcion : string.Empty,
-                    CitaRecibo = c.Recibo
+                    CitaRecibo = c.Recibo != null ? new ReciboDto
+                    {
+                        IdRecibo = c.Recibo.IdRecibo,
+                        MontoNeto = c.Recibo.MontoNeto,
+                        Observaciones = c.Recibo.Observaciones,
+                        MedioPago = c.Recibo.MedioPago,
+                        IdMoneda = c.Recibo.IdMoneda,
+                        Moneda = c.Recibo.Moneda,
+                        FIngreso = c.Recibo.FIngreso
+                    } : null
                 }).ToListAsync(),
                 TotalRecords = await _context.Citas.CountAsync()
             };
@@ -46,7 +56,16 @@ namespace Clinica.Services.Services
                 TipoCitaNombre = c.TipoCita != null ? c.TipoCita.NombreCita : string.Empty,
                 EstadoCitaCodigo = c.EstadoCitaCodigo,
                 EstadoCitaDescripcion = c.EstadoCita != null ? c.EstadoCita.Descripcion : string.Empty,
-                CitaRecibo = c.Recibo
+                CitaRecibo = c.Recibo != null ? new ReciboDto
+                {
+                    IdRecibo = c.Recibo.IdRecibo,
+                    MontoNeto = c.Recibo.MontoNeto,
+                    Observaciones = c.Recibo.Observaciones,
+                    MedioPago = c.Recibo.MedioPago,
+                    IdMoneda = c.Recibo.IdMoneda,
+                    Moneda = c.Recibo.Moneda,
+                    FIngreso = c.Recibo.FIngreso
+                } : null
             });
 
             if (filtroDTO.PageSize == 0)
