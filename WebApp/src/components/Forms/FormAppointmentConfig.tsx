@@ -59,6 +59,9 @@ export default function FormAppointmentConfig() {
 
   // Se actualizó la firma para recibir el PrecioBase
   const handleSave = async (id: number, description: string, isActive: boolean, precioBase: number) => {
+    if (validaciones()) {
+      return;
+    }
     try {
       await api.put(`/CatalogoCita/${id}`, {
         id,
@@ -78,10 +81,28 @@ export default function FormAppointmentConfig() {
       error({ titulo: "Error", descripcion: "No se pudo guardar la configuración" });
     }
   };
-
-  const handleCreateNew = async () => {
+  const validaciones = () => {
+    
     if (!newAppointment.name.trim()) {
       error({ titulo: "Completa el nombre", descripcion: "El nombre de la cita es obligatorio" });
+      return true;
+    }
+
+    if (!newAppointment.description.trim()) {
+      error({ titulo: "Completa la descripción", descripcion: "La descripción de la cita es obligatoria" });
+      return true;
+    }
+
+    if (newAppointment.PrecioBase <= 0) {
+      error({ titulo: "Precio inválido", descripcion: "El precio base debe ser un valor positivo" });
+      return true;
+    }
+
+    return false;
+  }
+
+  const handleCreateNew = async () => {
+    if (validaciones()) {
       return;
     }
 
@@ -137,19 +158,20 @@ export default function FormAppointmentConfig() {
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <input
-                  type="text"
-                  defaultValue={item.description}
-                  onChange={(event) => {
-                    setAppointments((prev) =>
-                      prev.map((app) =>
-                        app.id === item.id ? { ...app, description: event.target.value } : app
-                      )
-                    );
-                  }}
-                  placeholder="Agrega una descripción para esta cita..."
-                  className="w-full sm:flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                />
+<textarea
+  value={item.description || ''} // Usamos 'value' para sincronización bidireccional
+  onChange={(event) => {
+    const newDescription = event.target.value;
+    setAppointments((prev) =>
+      prev.map((app) =>
+        app.id === item.id ? { ...app, description: newDescription } : app
+      )
+    );
+  }}
+  placeholder="Agrega una descripción para esta cita..."
+  rows={2} // Opcional: establece una altura inicial cómoda
+  className="w-full sm:flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 resize-y"
+/>
 
                 {/* Nuevo Input para Precio Base */}
                 <input

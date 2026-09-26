@@ -18,4 +18,11 @@ interface CitaReciboResponse {
   medioPago: number;
   montoNeto: number;
   observaciones: string;
+  moneda: CitaReciboMonedaResponse;
+}
+
+interface CitaReciboMonedaResponse {
+  idMoneda: number;
+  monedaDescripcion: string;
+  monedaSimbolo: string;
 }

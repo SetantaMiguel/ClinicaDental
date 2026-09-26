@@ -45,7 +45,7 @@ export default function ClinicalHistory() {
     const { id: id } = useParams<{ id: string }>();
     const idPaciente = id ? parseInt(id) : 0;
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const [estadoSeleccionado, setEstadoSeleccionado] = useState<string>('');
     const handleFormSuccess = (id: number, isEdit: boolean) => {
         setIsModalOpen(!isModalOpen);
         success({
@@ -195,12 +195,18 @@ export default function ClinicalHistory() {
 
                         {/* Especialista */}
                         <div className="p-5 ">
-                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Especialista Asignado</h3>
+                            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Cobros totales</h3>
                             <p className="text-sm font-semibold text-slate-900"></p>
                             <p className="text-xs text-slate-500"></p>
                             <div className="mt-3 pt-3 border-t border-slate-100 flex justify-between items-center text-sm">
-                                <span className="text-slate-500">Saldo pendiente:</span>
-                                <span className="font-semibold text-slate-900">{patient.montoPago.toFixed(2)}</span>
+                                <span className="text-slate-500">Saldo local:</span>
+                                <span className="font-semibold text-slate-900">{patient.citas?.filter((cita) => cita.estadoCitaCodigo === "A" && cita.citaRecibo?.moneda?.idMoneda === 1 ? true : false)
+                                    .reduce((total, cita) => total + (cita.citaRecibo?.montoNeto || 0), 0).toFixed(2)}</span>
+                            </div>
+                            <div className="mt-3 pt-3 border-t border-slate-100 flex justify-between items-center text-sm">
+                                <span className="text-slate-500">Saldo $:</span>
+                                <span className="font-semibold text-slate-900">{patient.citas?.filter((cita) => cita.estadoCitaCodigo === "A" && cita.citaRecibo?.moneda?.idMoneda === 2 ? true : false)
+                                    .reduce((total, cita) => total + (cita.citaRecibo?.montoNeto || 0), 0).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
@@ -232,18 +238,24 @@ export default function ClinicalHistory() {
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-lg font-bold text-slate-900 flex items-center">
                                     Registro de Evolución Odontológica
-                                    <span className="ml-3 bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-full font-medium">{patient.citas?.length || 0} Registros</span>
+                                    <span className="ml-3 bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-full font-medium">{patient.citas?.filter((cita) => estadoSeleccionado ? cita.estadoCitaCodigo === estadoSeleccionado : true).length || 0} Registros</span>
                                 </h2>
-                                {/* <div className="flex items-center text-sm text-slate-500">
-                                    <span className="mr-2">Filtrar por año:</span>
-                                    <select className="border border-slate-300 rounded-md py-1 px-2 text-slate-700 bg-white">
-                                        <option>2026 (Todos)</option>
+                                <div className="flex items-center text-sm text-slate-500">
+                                    <span className="mr-2">Filtrar por estado:</span>
+                                    <select className="border border-slate-300 rounded-md py-1 px-2 text-slate-700 bg-white" onChange={(e) => {
+                                        setEstadoSeleccionado(e.target.value);
+                                    }}>
+                                        <option value={''}>Todos</option>
+                                        <option value={'A'}>Atendido</option>
+                                        <option value={'P'}>Pendiente</option>
+                                        <option value={'C'}>Cancelado</option>
+                                        <option value={'R'}>Reagendado</option>
                                     </select>
-                                </div> */}
+                                </div>
                             </div>
 
                             <div className="relative border-l-2 border-slate-200 ml-3 space-y-8 pb-8">
-                                {patient.citas?.map((item) => (
+                                {patient.citas?.filter((cita) => estadoSeleccionado ? cita.estadoCitaCodigo === estadoSeleccionado : true).map((item) => (
                                     <div key={item.id} className="relative pl-8">
                                         {/* Timeline Dot */}
                                         <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-4 border-white bg-blue-400"></div>
@@ -262,7 +274,7 @@ export default function ClinicalHistory() {
                                                          font-medium px-2 py-1 rounded-md border border-emerald-100 mb-1`}>
                                                         <Check className="w-3 h-3 mr-1" /> {item.estadoCitaDescripcion}
                                                     </span>
-                                                    <p className="font-bold text-slate-900 text-sm">{item.citaRecibo?.montoNeto || 0}</p>
+                                                    <p className="font-bold text-slate-900 text-sm">{`${item.citaRecibo?.moneda?.monedaSimbolo || ''} ${item.citaRecibo?.montoNeto || 0}`}</p>
                                                 </div>
                                             </div>
 
@@ -274,6 +286,9 @@ export default function ClinicalHistory() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                        <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
+
                         </div>
                     </div>
                 </div>
