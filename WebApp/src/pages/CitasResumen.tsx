@@ -10,14 +10,10 @@ import { useNotify } from '../components/Context/NotifyContext';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import { DetalleCitaCard } from '../components/common/Citas/DetalleCitaCard.tsx';
+import FormFilterCita from '../components/Forms/FormFilterCita.tsx';
+import type { CitaFiltro } from '../components/Forms/FormFilterCita.tsx';
 
 dayjs.locale('es');
-
-// Interfaz temporal para el filtro de citas (ajusta según tus necesidades)
-export interface CitaFiltro {
-  PacienteNombre?: string;
-  EstadoCodigo?: string;
-}
 
 export default function CitasResumen() {
   const { error } = useNotify();
@@ -29,17 +25,18 @@ export default function CitasResumen() {
   
   // Estados para Filtros
   const [showFilter, setShowFilter] = useState(false);
-  const [filtroCita, setFiltroCita] = useState<CitaFiltro>({ PacienteNombre: undefined, EstadoCodigo: undefined });
+  const [filtroCita, setFiltroCita] = useState<CitaFiltro>({});
 
   const [selectedCita, setSelectedCita] = useState<CitaEvent | null>(null);
 
   const clearFilters = () => {
-    setFiltroCita({ PacienteNombre: undefined, EstadoCodigo: undefined });
-    getCitas({ PacienteNombre: undefined, EstadoCodigo: undefined });
-    setShowFilter(!showFilter);
+    setFiltroCita({});
+    setPagePrompt((page) => ({ ...page, pageNumber: 1 }));
+    getCitas({}, 1);
+    setShowFilter(false);
   };
 
-  const getCitas = async (filtro?: CitaFiltro) => {
+  const getCitas = async (filtro?: CitaFiltro, pageNumber = PagePrompt.pageNumber) => {
     try {
       setIsLoading(true);
       const filtroUsar = filtro ? { ...filtroCita, ...filtro } : filtroCita;
@@ -47,15 +44,19 @@ export default function CitasResumen() {
 
       const response = await api.get(`/Citas`, {
         params: {
-          pageNumber: PagePrompt.pageNumber,
+          pageNumber,
           pageSize: PagePrompt.pageSize,
+          fechaDesde: filtroUsar.FechaDesde ?? null,
+          fechaHasta: filtroUsar.FechaHasta ?? null,
           pacienteNombre: filtroUsar.PacienteNombre ?? null,
-          estadoCodigo: filtroUsar.EstadoCodigo ?? null
+          estadoCitaCodigo: filtroUsar.EstadoCitaCodigo ?? null,
+          tipoCitaId: filtroUsar.TipoCitaId ?? null
         },
       });
 
       setPagePrompt({
         ...PagePrompt,
+        pageNumber,
         TotalRecords: response.data.totalRecords || response.data.data.length // Ajustar según tu API
       });
 
@@ -69,6 +70,13 @@ export default function CitasResumen() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const applyFilters = (filtro: CitaFiltro) => {
+    setFiltroCita(filtro);
+    setPagePrompt((page) => ({ ...page, pageNumber: 1 }));
+    getCitas(filtro, 1);
+    setShowFilter(false);
   };
 
   useEffect(() => {
@@ -183,11 +191,10 @@ export default function CitasResumen() {
         <div>
           {/* Popover para filtros de búsqueda */}
           <Popover 
-            classChild="flex w-25 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group font-semibold text-slate-700"
+            classChild="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group font-semibold text-slate-700"
             children={
-              <div className="p-4 text-sm text-slate-600">
-                <p>Formulario de Filtros de Cita (Próximamente)</p>
-                <button onClick={clearFilters} className="mt-2 text-blue-600 underline">Limpiar filtros</button>
+              <div className="text-sm text-slate-600">
+                <FormFilterCita ApplyFilters={applyFilters} filtroActual={filtroCita} onCancel={clearFilters} />
               </div>
             }
             isOpen={showFilter} 

@@ -43,9 +43,40 @@ namespace Clinica.Services.Services
             };
         }
 
-        public async Task<PageResponse<CitaResumenDTO>> ObtenerTodos(PacienteFiltroDTO filtroDTO)
+        public async Task<PageResponse<CitaResumenDTO>> ObtenerTodos(CitaFiltroDto filtroDTO)
         {
-            var query = _context.Citas.OrderByDescending(c => c.Id).Select(c => new CitaResumenDTO
+            var citas = _context.Citas.AsQueryable();
+
+            if (filtroDTO.FechaDesde.HasValue)
+            {
+                var fechaDesde = filtroDTO.FechaDesde.Value.Date;
+                citas = citas.Where(c => c.FechaInicio >= fechaDesde);
+            }
+
+            if (filtroDTO.FechaHasta.HasValue)
+            {
+                var fechaHastaExclusiva = filtroDTO.FechaHasta.Value.Date.AddDays(1);
+                citas = citas.Where(c => c.FechaInicio < fechaHastaExclusiva);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filtroDTO.PacienteNombre))
+            {
+                var nombrePaciente = filtroDTO.PacienteNombre.Trim();
+                citas = citas.Where(c => c.Paciente != null &&
+                    EF.Functions.ILike(c.Paciente.Nombre + " " + c.Paciente.Apellido, $"%{nombrePaciente}%"));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filtroDTO.EstadoCitaCodigo))
+            {
+                citas = citas.Where(c => c.EstadoCitaCodigo == filtroDTO.EstadoCitaCodigo);
+            }
+
+            if (filtroDTO.TipoCitaId.HasValue)
+            {
+                citas = citas.Where(c => c.TipoCitaId == filtroDTO.TipoCitaId.Value);
+            }
+
+            var query = citas.OrderByDescending(c => c.Id).Select(c => new CitaResumenDTO
             {
                 Id = c.Id,
                 PacienteId = c.PacienteId,

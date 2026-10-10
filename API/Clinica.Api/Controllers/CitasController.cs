@@ -15,7 +15,7 @@ namespace Clinica.Api.Controllers
         private readonly ICitasService _citasService = citasService;
 
         [HttpGet]
-        public async Task<ActionResult<PageResponse<CitaResumenDTO>>>GetCitas([FromQuery] PacienteFiltroDTO filtroDTO)
+        public async Task<ActionResult<PageResponse<CitaResumenDTO>>>GetCitas([FromQuery] CitaFiltroDto filtroDTO)
         {
             var citas = await _citasService.ObtenerTodos(filtroDTO);
             return Ok(citas);
