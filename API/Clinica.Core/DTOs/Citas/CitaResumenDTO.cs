@@ -16,5 +16,6 @@ namespace Clinica.Core.DTOs.Citas
         public string EstadoCitaCodigo { get; set; } = string.Empty;
         public string EstadoCitaDescripcion { get; set; } = string.Empty;
         public ReciboDto? CitaRecibo { get; set; }
+        public string? UsuarioCreacion { get; set; }
     }
 }

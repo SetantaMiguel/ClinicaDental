@@ -11,6 +11,7 @@ export interface CitaApiResponse {
   estadoCitaDescripcion: string;
   citaRecibo?: CitaReciboResponse;
   fechaInicioDate?:Date;
+  usuarioCreacion?: string;
 }
 
 interface CitaReciboResponse {

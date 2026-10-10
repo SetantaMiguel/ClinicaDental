@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Clinica.Core.DTOs.Filters;
 using Clinica.Core.DTOs.Pacientes;
 using Clinica.Core.Models;
@@ -19,7 +20,7 @@ public class PacientesController(ClinicaContext context, IPacienteService pacien
 
     [HttpGet]
     public async Task<ActionResult<PageResponse<Pacientes>>> GetPacientes([FromQuery] PacienteFiltroDTO filtro)
-    {
+    {   
         var pacientes = await _pacienteService.ObtenerTodos(filtro);
         return Ok(pacientes);
     }
@@ -60,7 +61,7 @@ public class PacientesController(ClinicaContext context, IPacienteService pacien
 
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        if (await _context.Pacientes.AnyAsync(p => p.Telefono == paciente.Telefono))
+        if (!string.IsNullOrEmpty(paciente.Telefono) && await _context.Pacientes.AnyAsync(p => p.Telefono == paciente.Telefono))
         {
             return Conflict(new { message = "Ya existe un paciente con este número de teléfono." });
         }

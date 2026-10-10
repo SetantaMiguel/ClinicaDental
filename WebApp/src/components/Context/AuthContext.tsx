@@ -25,8 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             const userData: User = JSON.parse(savedUser);
             try {
-                setUser(userData);
-    
+                setUser(userData); 
             } 
             catch (error) {
                 console.log("Error al decodificar el token", error);

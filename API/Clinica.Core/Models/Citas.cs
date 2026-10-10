@@ -26,6 +26,6 @@ namespace Clinica.Core.Models
         [ForeignKey("EstadoCitaCodigo")]
         public virtual CatalogoEstadoCita? EstadoCita { get; set; }
         public virtual CitaRecibo? Recibo { get; set; }
-
+        public string UsuarioCreacion { get; set; } = string.Empty;
     }
 }

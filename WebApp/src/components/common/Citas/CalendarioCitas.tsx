@@ -30,13 +30,13 @@ export default function CalendarioCitas() {
     try {
       const response = await api.get('/Citas');
       const citas = response.data.data as CitaApiResponse[];
+      console.log('Cargando cita:', citas);
 
       const mappedEvents = citas.map((cita) => {
         const start = dayjs(cita.fechaInicio).isValid() ? dayjs(cita.fechaInicio).toDate() : new Date();
         const end = dayjs(cita.fechaFin).isValid() ? dayjs(cita.fechaFin).toDate() : dayjs(start).add(60, 'minute').toDate();
         const pacienteNombre = cita.pacienteNombre;
         const tipoCitaNombre = cita.tipoCitaNombre;
-
         return {
           id: cita.id,
           title: `${tipoCitaNombre} - ${pacienteNombre} Cita #${cita.id}`,
@@ -50,7 +50,8 @@ export default function CalendarioCitas() {
           estadoCitaCodigo: cita.estadoCitaCodigo,
           estadoCitaDescripcion: cita.estadoCitaDescripcion,
           fechaText: `${dayjs(start).format('DD/MM/YYYY')} ${dayjs(start).format('HH:mm')} - ${dayjs(end).format('HH:mm')}`,
-          Recibo: cita.citaRecibo
+          Recibo: cita.citaRecibo,
+          usuarioCreacion: cita.usuarioCreacion
         };
       });
 

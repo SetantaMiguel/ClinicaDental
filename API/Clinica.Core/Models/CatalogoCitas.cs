@@ -16,5 +16,6 @@ namespace Clinica.Core.Models
         [Required]
         public bool Vigente { get; set; }
         public virtual ICollection<Citas> ListaCitas { get; set; } = [];
+        public string UsuarioCreacion { get; set; } = string.Empty;
     }
 }

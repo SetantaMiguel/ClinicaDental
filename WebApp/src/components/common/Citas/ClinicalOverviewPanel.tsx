@@ -20,7 +20,6 @@ import CitasRecientes from './CitasRecientes';
 
 const formatToYYYYMM = (date: Date) => {
     const year = date.getFullYear();
-    // Se suma 1 porque los meses en JavaScript van de 0 a 11
     const month = String(date.getMonth() + 1).padStart(2, '0');
 
     return `${year}${month}`;

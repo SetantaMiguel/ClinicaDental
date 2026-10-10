@@ -19,5 +19,6 @@ public class Pacientes
     public string Identificacion { get; set; } = string.Empty;
     public DateTime FIngreso { get; set; }
     public virtual ICollection<Citas> ListaCitas { get; set; } = [];
+    public string UsuarioCreacion { get; set; } = string.Empty;
 
 }

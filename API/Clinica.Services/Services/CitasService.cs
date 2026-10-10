@@ -36,7 +36,8 @@ namespace Clinica.Services.Services
                         IdMoneda = c.Recibo.IdMoneda,
                         Moneda = c.Recibo.Moneda,
                         FIngreso = c.Recibo.FIngreso
-                    } : null
+                    } : null,
+                    UsuarioCreacion = c.UsuarioCreacion
                 }).ToListAsync(),
                 TotalRecords = await _context.Citas.CountAsync()
             };
@@ -65,7 +66,8 @@ namespace Clinica.Services.Services
                     IdMoneda = c.Recibo.IdMoneda,
                     Moneda = c.Recibo.Moneda,
                     FIngreso = c.Recibo.FIngreso
-                } : null
+                } : null,
+                UsuarioCreacion = c.UsuarioCreacion
             });
 
             if (filtroDTO.PageSize == 0)

@@ -148,7 +148,7 @@ export default function PacientesPage() {
         children={<FormPatient OnSuccess={handleFormSuccess}
           idPaciente={selectedPacienteId} />} />
 
-      <Modal isOpen={isModalOpenCita} onClose={()=>{setIsModalOpenCita(!isModalOpen)}}
+      <Modal isOpen={isModalOpenCita} onClose={()=>{setIsModalOpenCita(!isModalOpenCita)}}
         children={<FormAppointment OnSuccess={handleFormSuccessCita} idPaciente={selectedPacienteId} />} />
 
       <h1 className="text-2xl font-bold text-gray-800 ">Gestión de Pacientes</h1>

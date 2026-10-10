@@ -132,7 +132,9 @@ export default function CitasResumen() {
               , estadoCitaCodigo: c.estadoCitaCodigo
               , estadoCitaDescripcion: c.estadoCitaDescripcion
               , fechaText: `${dayjs(c.fechaInicio).format('DD/MM/YYYY')} ${dayjs(c.fechaInicio).format('HH:mm')} - ${dayjs(c.fechaFin).format('HH:mm')}`
-              , Recibo: c.citaRecibo});
+              , Recibo: c.citaRecibo
+              , usuarioCreacion: c.usuarioCreacion
+            });
           }}
         >
           <Eye className="w-5 h-5" />

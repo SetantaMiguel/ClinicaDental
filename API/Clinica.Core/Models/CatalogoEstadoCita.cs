@@ -15,5 +15,6 @@ namespace Clinica.Core.Models
 
         [Required]
         public bool Estado { get; set; }
+        
     }
 }

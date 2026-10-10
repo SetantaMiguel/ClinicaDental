@@ -43,6 +43,10 @@ namespace Clinica.Data.Migrations
                     b.Property<decimal>("PrecioBase")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("Vigente")
                         .HasColumnType("boolean");
 
@@ -98,6 +102,10 @@ namespace Clinica.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("IdRecibo");
 
                     b.HasIndex("CitaId")
@@ -136,6 +144,10 @@ namespace Clinica.Data.Migrations
                     b.Property<int>("TipoCitaId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UsuarioCreacion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EstadoCitaCodigo");
@@ -172,6 +184,12 @@ namespace Clinica.Data.Migrations
                     b.Property<DateTime>("FechaModificacion")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("FechaUltimaConexion")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -205,8 +223,9 @@ namespace Clinica.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<bool>("isEnabled")
-                        .HasColumnType("boolean");
+                    b.Property<string>("UsuarioCreacion")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -283,6 +302,10 @@ namespace Clinica.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<string>("UsuarioCreacion")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

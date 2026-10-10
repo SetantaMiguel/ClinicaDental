@@ -21,6 +21,7 @@ namespace Clinica.Core.Models
         [ForeignKey("IdMoneda")]
         public virtual Moneda? Moneda { get; set; }
         public DateTime FIngreso { get; set; }
+        public string UsuarioCreacion { get; set; } = string.Empty;
 
     }
 }

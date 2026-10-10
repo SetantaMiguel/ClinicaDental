@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  ChevronDown, 
-  CheckCircle, 
-  CalendarClock, 
+import {
+  ChevronDown,
+  CheckCircle,
+  CalendarClock,
   XCircle,
   User,
   Calendar,
@@ -43,7 +43,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
   }, [selectedCita]);
 
   if (!selectedCita) return null;
-  
+
   const MarcarAtendida = async () => {
     setPaso(2);
     setIsShowButtonActions(false);
@@ -86,7 +86,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
       });
     }
   };
-  
+
   const handleFormSuccessCita = async () => {
     setIsFormCitaOpenReagendar(false);
     setSelectedCita(null);
@@ -172,7 +172,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
           <div className="flex flex-col lg:flex-row gap-8 h-full">
             {/* Columna de Información - Grid Fijo */}
             <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 content-start ${selectedCita.Recibo ? 'lg:w-3/5' : 'w-full'}`}>
-              
+
               {/* Card Paciente (1 columna) */}
               <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3">
                 <div className="bg-blue-50 text-blue-600 p-2.5 rounded-lg flex-shrink-0">
@@ -222,7 +222,16 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
                   )}
                 </div>
               </div>
-
+              {/* Card Usuario Creación (Fila Completa -> sm:col-span-2) */}
+              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3 sm:col-span-2">
+                <div className="bg-blue-50 text-blue-600 p-2.5 rounded-lg flex-shrink-0">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">Usuario de Creación</span>
+                  <span className="text-slate-800 font-semibold">{selectedCita.usuarioCreacion || 'No disponible'}</span>
+                </div>
+              </div>
             </div>
 
             {/* Recibo Lectura */}
@@ -235,7 +244,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
                 <div className="flex-1 bg-slate-50/50 rounded-xl border border-slate-100 p-1">
                   <ReciboCitaForm
                     isReadOnly={true}
-                    onSuccess={() => {}}
+                    onSuccess={() => { }}
                     idCita={0}
                     idCitaRecibo={selectedCita.Recibo?.idRecibo}
                     idCatalogCita={0}

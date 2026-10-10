@@ -12,6 +12,7 @@ export interface CitaEvent {
   estadoCitaDescripcion: string;
   fechaText?: string;
   Recibo? : CitaReciboResponse;
+  usuarioCreacion?: string;
 }
 
 interface CitaReciboResponse {
