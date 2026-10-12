@@ -97,7 +97,7 @@ export default function CitasResumen() {
   const columnas = [
     { header: 'ID', key: 'id', render: (c: CitaApiResponse) => `#${c.id}` },
     { header: 'Paciente', key: 'pacienteNombre' },
-    { header: 'Tipo de Cita', key: 'tipoCitaNombre' },
+    { header: 'Tipo de Cita', key: 'tiposCita', render: (c: CitaApiResponse) => c.tiposCita?.map(tc => tc.tipoCitaNombre).join(', ') ?? 'N/A' },
     {
       header: "Fecha y Hora",
       key: "fechaInicio",
@@ -130,17 +130,16 @@ export default function CitasResumen() {
             setSelectedCita({
               ...selectedCita
               , id: c.id
-              , title: `${c.tipoCitaNombre} - ${c.pacienteNombre} Cita #${c.id}`
+              , title: `Cita #${c.id} - ${c.pacienteNombre}`
               , start: dayjs(c.fechaInicio).toDate(), end: dayjs(c.fechaFin).toDate()
               , pacienteId: c.pacienteId
-              , tipoCitaId: c.tipoCitaId
               , observaciones: c.observaciones
               , pacienteNombre: c.pacienteNombre
-              , tipoCitaNombre: c.tipoCitaNombre
               , estadoCitaCodigo: c.estadoCitaCodigo
               , estadoCitaDescripcion: c.estadoCitaDescripcion
               , fechaText: `${dayjs(c.fechaInicio).format('DD/MM/YYYY')} ${dayjs(c.fechaInicio).format('HH:mm')} - ${dayjs(c.fechaFin).format('HH:mm')}`
               , Recibo: c.citaRecibo
+              , tiposCita: c.tiposCita
               , usuarioCreacion: c.usuarioCreacion
             });
           }}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TipoCitaComboBox from "../CombosBox/TipoCitaComboBox";
 import PacienteComboBox from "../CombosBox/PacienteComboBox";
 import type { Cita } from "../../types/index.ts";
@@ -18,7 +18,7 @@ const initialCita: Cita = {
   horaFin: '',
   id: 0,
   idPaciente: 0,
-  tipoCitaId: 0,
+  tiposCitaIds: [],
   observaciones: ''
 };
 
@@ -49,7 +49,7 @@ const formatearHora = (date: Date) => {
 export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormAppointmentProps) {
   const { success, error } = useNotify();
   const [paso, setPaso] = useState<1 | 2>(1);
-  const [tipoCitaNombre, setTipoCitaNombre] = useState<string>('—');
+  const [tiposCitaNombres, setTiposCitaNombres] = useState<string[]>([]);
   const [cita, setCita] = useState<Cita>(initialCita);
   const [pacienteNombre, setPacienteNombre] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -68,15 +68,24 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
           setIsLoading(true);
           const response = await api.get(`/Citas/${idCita}`);
           const rawData = response.data;
-
+            console.log('Datos de la cita obtenidos:', rawData);
           const startDate = new Date(rawData.fechaInicio);
           const endDate = new Date(rawData.fechaFin);
+          const tiposCitaRaw = rawData.tiposCita ?? rawData.TiposCita ?? [];
+          const tiposCitaIds = Array.isArray(tiposCitaRaw)
+            ? tiposCitaRaw
+                .map((tipo: { catalogoCitaId?: number; idTipoCita?: number; id?: number }) =>
+                  tipo.catalogoCitaId ?? tipo.idTipoCita ?? tipo.id)
+                .filter((tipoId: number | undefined): tipoId is number => typeof tipoId === 'number')
+            : [];
 
           // 2. Mapeamos y transformamos los valores a nuestra interfaz Cita
           const citaData: Cita = {
             id: rawData.id,
             idPaciente: rawData.pacienteId,
-            tipoCitaId: rawData.tipoCitaId,
+            tiposCitaIds: tiposCitaIds.length > 0
+              ? tiposCitaIds
+              : rawData.tipoCitaId ? [rawData.tipoCitaId] : [],
 
             // 3. Separamos la fecha y la hora usando tus funciones
             fechaInicio: formatearFecha(startDate),
@@ -86,6 +95,13 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
 
             observaciones: rawData.observaciones || ''
           };
+          const tiposCitaNombresRaw = Array.isArray(tiposCitaRaw)
+            ? tiposCitaRaw
+                .map((tipo: { tipoCitaNombre?: string; nombreCita?: string }) =>
+                  tipo.tipoCitaNombre ?? tipo.nombreCita)
+                .filter((nombre: string | undefined): nombre is string => Boolean(nombre))
+            : [];
+          setTiposCitaNombres(tiposCitaNombresRaw);
           setDuracionMinutos((endDate.getTime() - startDate.getTime()) / (1000 * 60)); // Calcula la duración en minutos
           setCita(citaData);
         } catch (err) {
@@ -116,10 +132,10 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
     }));
   }, [cita.fechaInicio, cita.horaInicio, duracionMinutos]);
 
-  const handleCambioTipoCita = (id: number, nombre: string) => {
-    setCita((prev) => ({ ...prev, tipoCitaId: id }));
-    setTipoCitaNombre(nombre);
-  };
+  const handleCambioTipoCita = useCallback((ids: number[], nombres: string[]) => {
+    setCita((prev) => ({ ...prev, tiposCitaIds: ids }));
+    setTiposCitaNombres(nombres);
+  }, []);
 
   const handleCambioPaciente = (id: number, nombre: string) => {
     setCita((prev) => ({ ...prev, idPaciente: id }));
@@ -128,10 +144,10 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
 
   const irAlResumen = () => {
     console.log('Datos de la cita:', cita);
-    if (!cita.idPaciente || !cita.tipoCitaId || !cita.fechaInicio || !cita.horaInicio) {
+    if (!cita.idPaciente || cita.tiposCitaIds.length === 0 || !cita.fechaInicio || !cita.horaInicio) {
       error({
         titulo: 'Campos incompletos',
-        descripcion: 'Verifica haber seleccionado paciente, tipo de cita, fecha y hora.',
+        descripcion: 'Verifica haber seleccionado paciente, al menos un tipo de cita, fecha y hora.',
       });
       return;
     }
@@ -143,7 +159,7 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!cita.idPaciente || !cita.tipoCitaId || !cita.fechaInicio || !cita.horaInicio) return;
+    if (!cita.idPaciente || cita.tiposCitaIds.length === 0 || !cita.fechaInicio || !cita.horaInicio) return;
 
     const [anio, mes, dia] = cita.fechaInicio.split('-').map(Number);
     const [hora, minuto] = cita.horaInicio.split(':').map(Number);
@@ -156,7 +172,7 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
       const payload = {
         id: cita.id,
         PacienteId: cita.idPaciente,
-        TipoCitaId: cita.tipoCitaId,
+        TiposCita: cita.tiposCitaIds,
         FechaInicio: fechaInicio.toISOString(),
         FechaFin: fechaFin.toISOString(),
         Observaciones: cita.observaciones?.trim() || null,
@@ -187,7 +203,7 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
         });
       }
       setCita({ ...initialCita, idPaciente: idPaciente ?? 0 });
-      setTipoCitaNombre('—');
+      setTiposCitaNombres([]);
       setPacienteNombre('');
       setPaso(1);
     } catch (err: any) {
@@ -240,7 +256,7 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
 
               <div>
                 <TipoCitaComboBox
-                  value={cita.tipoCitaId}
+                  value={cita.tiposCitaIds}
                   onChange={handleCambioTipoCita}
                 />
               </div>
@@ -315,8 +331,8 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
                   <dd className="col-span-2 font-semibold text-gray-900">{pacienteNombre || `#${cita.idPaciente}`}</dd>
                 </div>
                 <div className="grid grid-cols-3 gap-4 px-5 py-4">
-                  <dt className="font-medium text-gray-500">Tipo de cita</dt>
-                  <dd className="col-span-2 font-semibold text-gray-900">{tipoCitaNombre}</dd>
+                  <dt className="font-medium text-gray-500">Tipos de cita</dt>
+                  <dd className="col-span-2 font-semibold text-gray-900">{tiposCitaNombres.join(', ') || '—'}</dd>
                 </div>
                 <div className="grid grid-cols-3 gap-4 px-5 py-4 bg-gray-50/50">
                   <dt className="font-medium text-gray-500">Horario de inicio</dt>

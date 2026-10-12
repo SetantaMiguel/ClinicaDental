@@ -68,6 +68,8 @@ public class PacientesController(ClinicaContext context, IPacienteService pacien
 
         var PacienteT = _pacienteService.AsignarDT(paciente);
 
+        PacienteT.UsuarioCreacion = User?.Identity?.Name ?? null; 
+
         var nuevoPaciente = await _pacienteService.Crear(PacienteT);
 
         return CreatedAtAction(nameof(GetPacientes), new { id = nuevoPaciente.Id });
@@ -78,7 +80,6 @@ public class PacientesController(ClinicaContext context, IPacienteService pacien
     {
         try
         {
-
 
             if (paciente == null) return BadRequest();
 

@@ -1,7 +1,7 @@
 export interface Cita {
     id: number;
     idPaciente: number;
-    tipoCitaId: number;
+    tiposCitaIds: number[];
     fechaInicio: string;
     horaInicio: string;
     fechaFin: string;

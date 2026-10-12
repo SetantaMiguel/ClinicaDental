@@ -55,7 +55,7 @@ export default function CitasRecientes() {
                                     <div className="w-10 h-10 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center font-bold">{cita.id}</div>
                                     <div>
                                         <p className="font-semibold text-slate-800">{cita.pacienteNombre}</p>
-                                        <p className="text-sm text-slate-500">{cita.tipoCitaNombre} • {dayjs(cita.fechaInicioDate).format('DD/MM/YYYY')}</p>
+                                        <p className="text-sm text-slate-500"> {dayjs(cita.fechaInicioDate).format('DD/MM/YYYY')}</p>
                                     </div>
                                 </div>
                                 <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-slate-500" />

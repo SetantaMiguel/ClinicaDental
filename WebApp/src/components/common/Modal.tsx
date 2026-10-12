@@ -84,7 +84,7 @@ export default function Modal({ isOpen, children, onClose }: ModalProps) {
 
     return (
         // Se añade 'overflow-hidden' al contenedor principal por precaución
-        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4 overflow-hidden">
+        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4 overflow-hidden ">
             <div 
                 ref={modalRef}
                 style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
@@ -110,7 +110,7 @@ export default function Modal({ isOpen, children, onClose }: ModalProps) {
                     </button>               
                 </div>          
 
-                <div className="flex p-2 overflow-x-auto overflow-y-auto">
+                <div className="flex p-2 overflow-x-auto overflow-y-auto ">
                     {children}
                 </div>
             </div>

@@ -36,17 +36,15 @@ export default function CalendarioCitas() {
         const start = dayjs(cita.fechaInicio).isValid() ? dayjs(cita.fechaInicio).toDate() : new Date();
         const end = dayjs(cita.fechaFin).isValid() ? dayjs(cita.fechaFin).toDate() : dayjs(start).add(60, 'minute').toDate();
         const pacienteNombre = cita.pacienteNombre;
-        const tipoCitaNombre = cita.tipoCitaNombre;
         return {
           id: cita.id,
-          title: `${tipoCitaNombre} - ${pacienteNombre} Cita #${cita.id}`,
+          title: `Cita #${cita.id} - ${pacienteNombre}`,
           start,
           end,
           pacienteId: cita.pacienteId,
-          tipoCitaId: cita.tipoCitaId,
+          tiposCita : cita.tiposCita ?? (cita.tiposCita ? [cita.tiposCita] : []),
           observaciones: cita.observaciones,
           pacienteNombre,
-          tipoCitaNombre,
           estadoCitaCodigo: cita.estadoCitaCodigo,
           estadoCitaDescripcion: cita.estadoCitaDescripcion,
           fechaText: `${dayjs(start).format('DD/MM/YYYY')} ${dayjs(start).format('HH:mm')} - ${dayjs(end).format('HH:mm')}`,

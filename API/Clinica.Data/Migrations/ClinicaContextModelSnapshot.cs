@@ -74,6 +74,21 @@ namespace Clinica.Data.Migrations
                     b.ToTable("CatalogoEstadoCita", (string)null);
                 });
 
+            modelBuilder.Entity("Clinica.Core.Models.CitaDetalleCatalogo", b =>
+                {
+                    b.Property<int>("CitaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CatalogoCitaId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CitaId", "CatalogoCitaId");
+
+                    b.HasIndex("CatalogoCitaId");
+
+                    b.ToTable("CitaDetalleCatalogo", (string)null);
+                });
+
             modelBuilder.Entity("Clinica.Core.Models.CitaRecibo", b =>
                 {
                     b.Property<int>("IdRecibo")
@@ -124,6 +139,9 @@ namespace Clinica.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CatalogoCitasId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("EstadoCitaCodigo")
                         .IsRequired()
                         .HasMaxLength(1)
@@ -141,20 +159,17 @@ namespace Clinica.Data.Migrations
                     b.Property<int>("PacienteId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("TipoCitaId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("UsuarioCreacion")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CatalogoCitasId");
+
                     b.HasIndex("EstadoCitaCodigo");
 
                     b.HasIndex("PacienteId");
-
-                    b.HasIndex("TipoCitaId");
 
                     b.ToTable("Citas", (string)null);
                 });
@@ -444,6 +459,25 @@ namespace Clinica.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Clinica.Core.Models.CitaDetalleCatalogo", b =>
+                {
+                    b.HasOne("Clinica.Core.Models.CatalogoCitas", "CatalogoCita")
+                        .WithMany()
+                        .HasForeignKey("CatalogoCitaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Clinica.Core.Models.Citas", "Cita")
+                        .WithMany("TiposCita")
+                        .HasForeignKey("CitaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CatalogoCita");
+
+                    b.Navigation("Cita");
+                });
+
             modelBuilder.Entity("Clinica.Core.Models.CitaRecibo", b =>
                 {
                     b.HasOne("Clinica.Core.Models.Citas", "Cita")
@@ -465,6 +499,10 @@ namespace Clinica.Data.Migrations
 
             modelBuilder.Entity("Clinica.Core.Models.Citas", b =>
                 {
+                    b.HasOne("Clinica.Core.Models.CatalogoCitas", null)
+                        .WithMany("ListaCitas")
+                        .HasForeignKey("CatalogoCitasId");
+
                     b.HasOne("Clinica.Core.Models.CatalogoEstadoCita", "EstadoCita")
                         .WithMany()
                         .HasForeignKey("EstadoCitaCodigo")
@@ -477,17 +515,9 @@ namespace Clinica.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Clinica.Core.Models.CatalogoCitas", "TipoCita")
-                        .WithMany("ListaCitas")
-                        .HasForeignKey("TipoCitaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("EstadoCita");
 
                     b.Navigation("Paciente");
-
-                    b.Navigation("TipoCita");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -549,6 +579,8 @@ namespace Clinica.Data.Migrations
             modelBuilder.Entity("Clinica.Core.Models.Citas", b =>
                 {
                     b.Navigation("Recibo");
+
+                    b.Navigation("TiposCita");
                 });
 
             modelBuilder.Entity("Clinica.Core.Models.Pacientes", b =>

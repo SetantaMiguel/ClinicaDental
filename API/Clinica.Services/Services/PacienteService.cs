@@ -81,7 +81,7 @@ namespace Clinica.Services.Services
             var paciente = await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id) ?? throw new Exception($"Paciente con ID {id} no encontrado.");
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
             paciente.ListaCitas = await _context.Citas.AsNoTracking()
-                                                        .Include(c => c.TipoCita)
+                                                        .Include(c => c.TiposCita)
                                                         .Include(c => c.Recibo)
                                                         .Include(c => c.Recibo.Moneda)
                                                         .Include(c => c.EstadoCita)
@@ -101,12 +101,12 @@ namespace Clinica.Services.Services
                 Citas = [.. paciente.ListaCitas.Select(c => new CitaResumenDTO
                 {
                     Id = c.Id,
-                    TipoCitaId = c.TipoCitaId,
+                    //TipoCitaId = c.TipoCitaId,
                     FechaInicio = c.FechaInicio,
                     FechaFin = c.FechaFin,
                     Observaciones = c.Observaciones,
                     EstadoCitaCodigo = c.EstadoCitaCodigo,
-                    TipoCitaNombre = c.TipoCita?.NombreCita ?? string.Empty,
+                    //TipoCitaNombre = c.TiposCita?. ?? string.Empty,
                     EstadoCitaDescripcion = c.EstadoCita?.Descripcion ?? string.Empty,
                     CitaRecibo = c.Recibo != null ? new ReciboDto
                     {

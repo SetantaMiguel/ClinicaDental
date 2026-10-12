@@ -4,15 +4,14 @@ export interface CitaEvent {
   start: Date;
   end: Date;
   pacienteId: number;
-  tipoCitaId: number;
   observaciones?: string | null;
   pacienteNombre?: string;
-  tipoCitaNombre?: string;
   estadoCitaCodigo: string;
   estadoCitaDescripcion: string;
   fechaText?: string;
   Recibo? : CitaReciboResponse;
   usuarioCreacion?: string;
+  tiposCita?: CitaCatalogos[];
 }
 
 interface CitaReciboResponse {
@@ -20,4 +19,9 @@ interface CitaReciboResponse {
   medioPago:number;
   montoNeto:number;
   observaciones:string;
+}
+
+interface CitaCatalogos{
+  idTipoCita: number;
+  tipoCitaNombre: string;
 }

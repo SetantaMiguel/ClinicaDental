@@ -30,18 +30,17 @@ interface FormProps {
     onSuccess: () => void;
     idCitaRecibo?: number;
     idCita?: number;
-    idCatalogCita?: number;
     isReadOnly: boolean;
 }
 
-export default function ReciboCitaForm({ onSuccess, idCita, idCatalogCita, idCitaRecibo, isReadOnly }: FormProps) {
+export default function ReciboCitaForm({ onSuccess, idCita, idCitaRecibo, isReadOnly }: FormProps) {
     const inputClassName = "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
     const labelClassName = "mb-1.5 block text-sm font-medium text-gray-700";
     const [citaRecibo, setCitaRecibo] = useState<CitaRecibo>(initialRecibo);
     const { error: notifyError, success: notifySuccess, warning: nWarning } = useNotify();
     const [isLoading, setIsLoading] = useState(false);
     const [mostrarPopup, setMostrarPopup] = useState(false);
-    const [tasaCambio,setTasaCambio] = useState<number>(36.5);
+    const [tasaCambio, setTasaCambio] = useState<number>(36.5);
 
     // Cálculo seguro del valor (por si el input está vacío)
     const valorConvertido = (Number(citaRecibo.montoNeto || 0) * tasaCambio).toFixed(2);
@@ -54,7 +53,6 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCatalogCita, idCit
     ];
 
     useEffect(() => {
-        debugger;
         if (idCita) {
             setCitaRecibo(prev => ({ ...prev, citaId: idCita }));
             fetchMontoBase();
@@ -87,9 +85,9 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCatalogCita, idCit
 
     const fetchMontoBase = async () => {
         try {
-            if (!idCatalogCita) return;
-            const response = await api.get<number>(`/CatalogoCita/base/${idCatalogCita}`);
-
+            if (!idCita) return;
+            const response = await api.get<number>(`/Citas/MontoBase/${idCita}`);
+            console.log('Monto base obtenido:', response.data);
             setCitaRecibo(prev => ({ ...prev, montoNeto: response.data }));
         } catch (error) {
 
@@ -131,13 +129,16 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCatalogCita, idCit
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         if (name === 'montoNeto') {
-            const regex = /^-?\d+(\.\d{1,2})?$/;
-            if (!regex.test(value.toString())) {
-                nWarning({
-                    titulo: 'Error',
-                    descripcion: 'Solo pueden haber 2 centavos.',
-                });
-                return
+            // Permitir que el campo esté vacío para que el usuario pueda borrar
+            if (value !== '') {
+                const regex = /^-?\d+(\.\d{1,2})?$/;
+                if (!regex.test(value.toString())) {
+                    nWarning({
+                        titulo: 'Error',
+                        descripcion: 'Solo pueden haber 2 centavos.',
+                    });
+                    return;
+                }
             }
         }
         setCitaRecibo(prev => ({
@@ -189,8 +190,8 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCatalogCita, idCit
                     {mostrarPopup && (
                         <div className="absolute top-full left-0 mt-2 p-3 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                             <h4 className="text-sm font-bold text-gray-700 mb-2 border-b pb-1">
-                                Tasa de Cambio 
-                                <input type='number' className='p-2 w-full' name='TasaCambio' value={tasaCambio} onChange={(value)=>{setTasaCambio(Number(value.target.value))}}   />
+                                Tasa de Cambio
+                                <input type='number' className='p-2 w-full' name='TasaCambio' value={tasaCambio} onChange={(value) => { setTasaCambio(Number(value.target.value)) }} />
                             </h4>
                             <div className="text-sm text-gray-600 mb-1">
                                 <strong>Base:</strong> {citaRecibo.montoNeto || "0.00"}
@@ -198,9 +199,9 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCatalogCita, idCit
                             <div className="text-sm text-green-600 font-bold">
                                 <strong>Total:</strong>
                                 <button type='button' >
-                                    {citaRecibo.idMoneda === 2 ? 
+                                    {citaRecibo.idMoneda === 2 ?
                                         valorConvertido
-                                     : valorDivido }
+                                        : valorDivido}
                                 </button>
                             </div>
                             <button

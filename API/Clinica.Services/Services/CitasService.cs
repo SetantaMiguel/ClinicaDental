@@ -19,12 +19,15 @@ namespace Clinica.Services.Services
                 {
                     Id = c.Id,
                     PacienteId = c.PacienteId,
-                    TipoCitaId = c.TipoCitaId,
                     FechaInicio = c.FechaInicio,
                     FechaFin = c.FechaFin,
                     Observaciones = c.Observaciones,
                     PacienteNombre = c.Paciente != null ? c.Paciente.Nombre + " " + c.Paciente.Apellido : string.Empty,
-                    TipoCitaNombre = c.TipoCita != null ? c.TipoCita.NombreCita : string.Empty,
+                    TiposCita = c.TiposCita != null ? c.TiposCita.Select(tc => new CatalogoCita
+                    {
+                        IdTipoCita = tc.CatalogoCitaId,
+                        TipoCitaNombre = tc.CatalogoCita != null ? tc.CatalogoCita.NombreCita : string.Empty
+                    }).ToList() : new List<CatalogoCita>(),
                     EstadoCitaCodigo = c.EstadoCitaCodigo,
                     EstadoCitaDescripcion = c.EstadoCita != null ? c.EstadoCita.Descripcion : string.Empty,
                     CitaRecibo = c.Recibo != null ? new ReciboDto
@@ -73,19 +76,23 @@ namespace Clinica.Services.Services
 
             if (filtroDTO.TipoCitaId.HasValue)
             {
-                citas = citas.Where(c => c.TipoCitaId == filtroDTO.TipoCitaId.Value);
+                citas = citas.Where(c => c.TiposCita.Any(tc => tc.CatalogoCitaId == filtroDTO.TipoCitaId.Value));
             }
 
             var query = citas.OrderByDescending(c => c.Id).Select(c => new CitaResumenDTO
             {
                 Id = c.Id,
                 PacienteId = c.PacienteId,
-                TipoCitaId = c.TipoCitaId,
+                //TipoCitaId = c.TipoCitaId,
                 FechaInicio = c.FechaInicio,
                 FechaFin = c.FechaFin,
                 Observaciones = c.Observaciones,
                 PacienteNombre = c.Paciente != null ? c.Paciente.Nombre + " " + c.Paciente.Apellido : string.Empty,
-                TipoCitaNombre = c.TipoCita != null ? c.TipoCita.NombreCita : string.Empty,
+                TiposCita = c.TiposCita != null ? c.TiposCita.Select(tc => new CatalogoCita
+                {
+                    IdTipoCita = tc.CatalogoCitaId,
+                    TipoCitaNombre = tc.CatalogoCita != null ? tc.CatalogoCita.NombreCita : string.Empty
+                }).ToList() : new List<CatalogoCita>(),
                 EstadoCitaCodigo = c.EstadoCitaCodigo,
                 EstadoCitaDescripcion = c.EstadoCita != null ? c.EstadoCita.Descripcion : string.Empty,
                 CitaRecibo = c.Recibo != null ? new ReciboDto
@@ -109,7 +116,7 @@ namespace Clinica.Services.Services
                     TotalRecords = await query.CountAsync()
                 };
             }
-            
+
             return new PageResponse<CitaResumenDTO>
             {
                 Data = await query.Skip((filtroDTO.PageNumber - 1) * filtroDTO.PageSize).Take(filtroDTO.PageSize).ToListAsync(),

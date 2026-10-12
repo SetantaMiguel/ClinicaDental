@@ -7,7 +7,8 @@ import {
   User,
   Calendar,
   Activity,
-  FileText
+  FileText,
+  List
 } from 'lucide-react';
 import ReciboCitaForm from '../../Forms/FormReciboCita';
 import type { CitaEvent } from '../../../types';
@@ -35,6 +36,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
   const [paso, setPaso] = useState<1 | 2>(1);
   const [isShowButtonActions, setIsShowButtonActions] = useState(true);
   const [isFormCitaOpenReagendar, setIsFormCitaOpenReagendar] = useState(false);
+  const AlturaModal = isFormCitaOpenReagendar ? 'min-h-screen' : '';
 
   useEffect(() => {
     if (selectedCita?.Recibo) {
@@ -93,8 +95,9 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
     onCargarCitas();
   }
 
+
   return (
-    <div className="rounded-2xl w-250 bg-white p-6 text-slate-700 shadow-sm border border-slate-200 min-h-[400px] flex flex-col">
+    <div className={`${AlturaModal} rounded-2xl w-250 bg-white p-6 text-slate-700 shadow-sm border border-slate-200 min-h-[400px] flex flex-col transition-all duration-300 `}>
       {/* Encabezado */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
@@ -195,8 +198,20 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
                 </div>
               </div>
 
+              {/* Card Tipos de Cita (1 columna) */}
+              <div className='bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3'>
+                <div className="bg-purple-50 text-purple-600 p-2.5 rounded-lg flex-shrink-0">
+                  <List className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">Citas configuradas</span>
+                  <span className="text-slate-800 font-semibold">
+                    {selectedCita.tiposCita?.length || 0 > 0 ? selectedCita.tiposCita?.map((tipo) => tipo.tipoCitaNombre).join(', ') : 'No disponible'}
+                  </span>
+                </div>
+              </div>
               {/* Card Estado (Fila Completa -> sm:col-span-2) */}
-              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3 sm:col-span-2">
+              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3 ">
                 <div className="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg flex-shrink-0">
                   <Activity className="w-5 h-5" />
                 </div>
@@ -207,21 +222,24 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
               </div>
 
               {/* Card Observaciones (Fila Completa -> sm:col-span-2) */}
-              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3 sm:col-span-2">
-                <div className="bg-amber-50 text-amber-600 p-2.5 rounded-lg flex-shrink-0">
-                  <FileText className="w-5 h-5" />
+              {selectedCita.observaciones && (
+                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3 sm:col-span-2">
+                  <div className="bg-amber-50 text-amber-600 p-2.5 rounded-lg flex-shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="w-full">
+                    <span className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">Observaciones</span>
+                    {selectedCita.observaciones ? (
+                      <span className="text-slate-700 text-sm leading-relaxed block mt-1" title={selectedCita.observaciones}>
+                        {selectedCita.observaciones}
+                      </span>
+                    ) : (
+                      <span className="text-slate-400 text-sm italic block mt-1">Sin observaciones previas</span>
+                    )}
+                  </div>
                 </div>
-                <div className="w-full">
-                  <span className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">Observaciones</span>
-                  {selectedCita.observaciones ? (
-                    <span className="text-slate-700 text-sm leading-relaxed block mt-1" title={selectedCita.observaciones}>
-                      {selectedCita.observaciones}
-                    </span>
-                  ) : (
-                    <span className="text-slate-400 text-sm italic block mt-1">Sin observaciones previas</span>
-                  )}
-                </div>
-              </div>
+              )}
+
               {/* Card Usuario Creación (Fila Completa -> sm:col-span-2) */}
               <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start gap-3 sm:col-span-2">
                 <div className="bg-blue-50 text-blue-600 p-2.5 rounded-lg flex-shrink-0">
@@ -247,7 +265,6 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
                     onSuccess={() => { }}
                     idCita={0}
                     idCitaRecibo={selectedCita.Recibo?.idRecibo}
-                    idCatalogCita={0}
                   />
                 </div>
               </div>
@@ -267,7 +284,6 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
                 onCargarCitas();
               }}
               idCita={selectedCita.id}
-              idCatalogCita={selectedCita.tipoCitaId}
               idCitaRecibo={0}
             />
           </div>

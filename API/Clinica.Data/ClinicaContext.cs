@@ -13,12 +13,12 @@ public class ClinicaContext(DbContextOptions<ClinicaContext> options) : Identity
     public DbSet<Citas> Citas { get; set; }
     public DbSet<CitaRecibo> CitasRecibo { get; set; }
     public DbSet<Moneda> Monedas { get; set; }
+    public DbSet<CitaDetalleCatalogo> CitaDetallesCatalogo { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        
+  
         modelBuilder.Entity<Pacientes>(entity =>
         {
             entity.ToTable("Pacientes");
@@ -125,12 +125,6 @@ public class ClinicaContext(DbContextOptions<ClinicaContext> options) : Identity
                 entity.Property(e => e.FechaFin)
                     .IsRequired();
 
-                // 3. Configuración explícita de la relación (Uno a Muchos)
-                entity.HasOne(c => c.TipoCita)
-                    .WithMany(tc => tc.ListaCitas)
-                    .HasForeignKey(c => c.TipoCitaId)
-                    .OnDelete(DeleteBehavior.Restrict); // Evita borrar todas las citas si se elimina un tipo de cita
-
                 entity.HasOne(c => c.Paciente)
                     .WithMany(p => p.ListaCitas)
                     .HasForeignKey(c => c.PacienteId)
@@ -147,6 +141,21 @@ public class ClinicaContext(DbContextOptions<ClinicaContext> options) : Identity
                 .OnDelete(DeleteBehavior.Restrict); // Evita borrar todas las citas si se elimina un estado de cita
             });
 
+        modelBuilder.Entity<CitaDetalleCatalogo>(entity =>
+        {
+            entity.ToTable("CitaDetalleCatalogo");
+            entity.HasKey(e => new { e.CitaId, e.CatalogoCitaId });
+
+            entity.HasOne(cd => cd.Cita)
+                .WithMany(c => c.TiposCita)
+                .HasForeignKey(cd => cd.CitaId)
+                .OnDelete(DeleteBehavior.Cascade); // Si se elimina una cita, se eliminan sus detalles asociados
+
+            entity.HasOne(cd => cd.CatalogoCita)
+                .WithMany() // No hay colección inversa en CatalogoCitas
+                .HasForeignKey(cd => cd.CatalogoCitaId)
+                .OnDelete(DeleteBehavior.Restrict); // Evita borrar todos los detalles si se elimina un tipo de cita
+        });
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
@@ -160,7 +169,6 @@ public class ClinicaContext(DbContextOptions<ClinicaContext> options) : Identity
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
             }
         }
-
 
     }
 }

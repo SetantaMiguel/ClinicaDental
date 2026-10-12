@@ -41,7 +41,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -55,6 +59,7 @@ builder.Services.AddScoped<ICitasService, CitasService>();
 builder.Services.AddScoped<ICitaReciboService, CitaReciboService>();
 builder.Services.AddScoped<IMonedaService, MonedaService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IServiceCitaDetalleCatalogo, ServiceCitaDetalleCatalogo>();
 
 builder.Services.AddCors(options =>
 {
