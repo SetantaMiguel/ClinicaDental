@@ -56,6 +56,12 @@ export interface DashboardResumen {
     pacientes:PacientesResumen;
 }
 
+const formateador = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD', // Cambia 'USD' por la moneda que necesites (ej. 'MXN', 'EUR')
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
 
 export default function ClinicalOverviewPanel() {
     const { success } = useNotify();
@@ -168,7 +174,7 @@ export default function ClinicalOverviewPanel() {
                                                     {moneda.moneda}
                                                 </span>
                                                 <span className="text-2xl pl-1 font-bold text-slate-800 flex items-center gap-2">
-                                                    {moneda?.sumaTotal ?? 0}
+                                                    {formateador.format(moneda?.sumaTotal ?? 0)}
                                                     {/* Renderizamos tu componente personalizado */}
                                                     <ValidaMesAnterior value={moneda.changeMes} />
                                                 </span>

@@ -56,7 +56,6 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
   const [duracionMinutos, setDuracionMinutos] = useState<number>(30);
 
   useEffect(() => {
-    console.log('idPaciente:', idPaciente, 'idCita:', idCita);
     if (idPaciente) {
       setCita((prev) => ({ ...prev, idPaciente: idPaciente }));
     }
@@ -68,7 +67,6 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
           setIsLoading(true);
           const response = await api.get(`/Citas/${idCita}`);
           const rawData = response.data;
-            console.log('Datos de la cita obtenidos:', rawData);
           const startDate = new Date(rawData.fechaInicio);
           const endDate = new Date(rawData.fechaFin);
           const tiposCitaRaw = rawData.tiposCita ?? rawData.TiposCita ?? [];
@@ -143,7 +141,6 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
   };
 
   const irAlResumen = () => {
-    console.log('Datos de la cita:', cita);
     if (!cita.idPaciente || cita.tiposCitaIds.length === 0 || !cita.fechaInicio || !cita.horaInicio) {
       error({
         titulo: 'Campos incompletos',

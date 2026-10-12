@@ -60,7 +60,6 @@ export default function ClinicalHistory() {
 
             const response = await api.get(`Pacientes/historial/${id}`);
             const data = response.data;
-            console.log("Datos del paciente cargados:", data);
 
             const mappedEvents = data.citas?.map((cita: any) => {
                 return {
@@ -76,8 +75,6 @@ export default function ClinicalHistory() {
             }).sort((a: any, b: any) => {
                 return new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime();
             });
-
-            console.log("Citas mapeadas:", mappedEvents);
 
             setPatient({
                 nombre: data.nombre,

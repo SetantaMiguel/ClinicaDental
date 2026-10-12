@@ -5,8 +5,8 @@ import { RectangleEllipsis, User } from 'lucide-react';
 import api from '../../../src/api/axiosConfig';
 
 export default function Login() {
-  const [Username, setUsuario] = useState('admin');
-  const [Password, setPassword] = useState('Admin123!');
+  const [Username, setUsuario] = useState('');
+  const [Password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isloading, setIsLoading] = useState(false);
   

@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using Clinica.Core.DTOs.Citas;
 using Clinica.Core.DTOs.Filters;
 using Clinica.Core.Models;
-using Clinica.Data.Migrations;
 using Clinica.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -80,11 +79,56 @@ namespace Clinica.Api.Controllers
 
             return Ok(montoBase);
         }
+       
+        [HttpGet("DetalleTipos/{id}")]
+        public async Task<ActionResult<IEnumerable<CitaDetalleCatalogo>>> TiposAgregados(int id)
+        {
+            var citaExists = await _citasService.ExistsAsync(c => c.Id == id);
+
+            if (!citaExists)
+            {
+                return NotFound();
+            }
+
+            var citasTipos = await _citaDetalleCatalogoService.GetFilteredAndOrderedAsync(ct => ct.CitaId == id
+                , nameof(CitaDetalleCatalogo.CatalogoCitaId)
+                , true
+                , includes:
+                [
+                    x => x.CatalogoCita
+                ]
+            );
+
+            return Ok(citasTipos.Count > 0 ? citasTipos : []);
+        }
+
+        [HttpPut("{id:int}/tipos")]
+        public async Task<IActionResult> ActualizarTiposCita(int id, [FromBody] int[] tiposCitaIds)
+        {
+            if (tiposCitaIds == null || tiposCitaIds.Length == 0)
+            {
+                return BadRequest("Debe especificar al menos un tipo de cita.");
+            }
+
+            var citaExiste = await _citasService.ExistsAsync(cita => cita.Id == id);
+            if (!citaExiste)
+            {
+                return NotFound();
+            }
+
+            var actualizacionCorrecta = await _citaDetalleCatalogoService.ReemplazarTiposAsync(id, tiposCitaIds);
+            if (!actualizacionCorrecta)
+            {
+                return BadRequest("Uno o más tipos de cita no existen.");
+            }
+
+            return NoContent();
+        }
 
         [HttpPost]
         public async Task<ActionResult<Citas>> CreateCita([FromBody] CitaDTO citaDto)
         {
-            var userId = User?.Identity?.Name; // Obtener el ID del usuario autenticado
+            var userId = User?.Identity?.Name ?? string.Empty; // Obtener el ID del usuario autenticado
 
             if (citaDto == null)
             {
@@ -110,7 +154,7 @@ namespace Clinica.Api.Controllers
                 {
                     CatalogoCitaId = tipoCitaId
                 })],
-                UsuarioCreacion = userId ?? null
+                UsuarioCreacion = userId
             };
 
             // Al guardar la cita, EF Core insertará la cita y los detalles en una sola transacción

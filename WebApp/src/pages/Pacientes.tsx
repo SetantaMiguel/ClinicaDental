@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Modal from '../components/common/Modal.tsx';
 import FormPatient from '../components/Forms/FormPatient';
 import type { Paciente, PagePrompt } from '../types/index.ts';
-import { UserRoundPlus, Search, UserPen, CalendarClock, ChevronRight, BookUser } from 'lucide-react';
+import { UserRoundPlus, UserPen, CalendarClock, ChevronRight, BookUser } from 'lucide-react';
 import api from '../api/axiosConfig.ts';
 import { AxiosError } from 'axios';
 import Popover from '../components/common/Popover.tsx';
@@ -162,12 +162,6 @@ export default function PacientesPage() {
           </div>
           <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
         </button>   
-
-        <button className="flex w-25 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
-          hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group" onClick={() => getPacientes()} >
-          <span className="font-semibold text-slate-700">Buscar</span>
-          <span className="pl-2 inline-block"><Search size={16} strokeWidth={2.5} /></span>
-        </button>
 
         <div>
           <Popover classChild="flex w-25 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl

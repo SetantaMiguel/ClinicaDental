@@ -97,7 +97,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
 
 
   return (
-    <div className={`${AlturaModal} rounded-2xl w-250 bg-white p-6 text-slate-700 shadow-sm border border-slate-200 min-h-[400px] flex flex-col transition-all duration-300 `}>
+    <div className={`${AlturaModal} rounded-2xl w-auto bg-white p-6 text-slate-700  flex flex-col transition-all duration-300 `}>
       {/* Encabezado */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
@@ -230,7 +230,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
                   <div className="w-full">
                     <span className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">Observaciones</span>
                     {selectedCita.observaciones ? (
-                      <span className="text-slate-700 text-sm leading-relaxed block mt-1" title={selectedCita.observaciones}>
+                      <span className="text-slate-700 text-sm leading-relaxed block mt-1  " title={selectedCita.observaciones}>
                         {selectedCita.observaciones}
                       </span>
                     ) : (
@@ -263,7 +263,7 @@ export const DetalleCitaCard: React.FC<DetalleCitaCardProps> = ({
                   <ReciboCitaForm
                     isReadOnly={true}
                     onSuccess={() => { }}
-                    idCita={0}
+                    idCita={selectedCita.id}
                     idCitaRecibo={selectedCita.Recibo?.idRecibo}
                   />
                 </div>

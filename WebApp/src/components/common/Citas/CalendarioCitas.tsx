@@ -30,7 +30,7 @@ export default function CalendarioCitas() {
     try {
       const response = await api.get('/Citas');
       const citas = response.data.data as CitaApiResponse[];
-      console.log('Cargando cita:', citas);
+      //onsole.log('Cargando cita:', citas);
 
       const mappedEvents = citas.map((cita) => {
         const start = dayjs(cita.fechaInicio).isValid() ? dayjs(cita.fechaInicio).toDate() : new Date();

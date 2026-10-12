@@ -68,7 +68,7 @@ public class PacientesController(ClinicaContext context, IPacienteService pacien
 
         var PacienteT = _pacienteService.AsignarDT(paciente);
 
-        PacienteT.UsuarioCreacion = User?.Identity?.Name ?? null; 
+        PacienteT.UsuarioCreacion = User?.Identity?.Name ?? string.Empty;
 
         var nuevoPaciente = await _pacienteService.Crear(PacienteT);
 

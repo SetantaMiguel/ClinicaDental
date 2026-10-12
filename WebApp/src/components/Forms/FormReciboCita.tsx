@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Banknote, CreditCard, Landmark } from 'lucide-react';
+import { Banknote, CreditCard, DollarSign, Landmark } from 'lucide-react';
 import api from '../../api/axiosConfig';
 import { useNotify } from '../Context/NotifyContext';
 import MonedaComboBox from "../CombosBox/MonedaComboBox";
 import LoadingDental from '../common/LoadingDental';
 import { AxiosError } from "axios";
-import { DollarSign } from 'lucide-react';
 
 interface CitaRecibo {
     idRecibo: number;
@@ -14,6 +13,20 @@ interface CitaRecibo {
     observaciones: string;
     medioPago: number;
     idMoneda: number;
+}
+
+interface TipoCitaProcesable {
+    catalogoCitaId: number;
+    catalogoCita: {
+        nombreCita: string;
+        precioBase: number;
+    } | null;
+}
+
+interface TipoCitaCatalogo {
+    id: number;
+    nombreCita: string;
+    precioBase: number;
 }
 
 // 2. Estado inicial limpio
@@ -41,6 +54,8 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCitaRecibo, isRead
     const [isLoading, setIsLoading] = useState(false);
     const [mostrarPopup, setMostrarPopup] = useState(false);
     const [tasaCambio, setTasaCambio] = useState<number>(36.5);
+    const [tiposCita, setTiposCita] = useState<TipoCitaProcesable[]>([]);
+    const [tiposCitaSeleccionados, setTiposCitaSeleccionados] = useState<number[]>([]);
 
     // Cálculo seguro del valor (por si el input está vacío)
     const valorConvertido = (Number(citaRecibo.montoNeto || 0) * tasaCambio).toFixed(2);
@@ -53,15 +68,21 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCitaRecibo, isRead
     ];
 
     useEffect(() => {
-        if (idCita) {
-            setCitaRecibo(prev => ({ ...prev, citaId: idCita }));
-            fetchMontoBase();
-        }
-        if (idCitaRecibo) {
-            setIsLoading(true)
-            fetchCitaRecibo();
-            setIsLoading(false)
-        }
+        if (idCita) setCitaRecibo(prev => ({ ...prev, citaId: idCita }));
+
+        const cargarDatos = async () => {
+            setIsLoading(true);
+            try {
+                await Promise.all([
+                    idCita ? fetchTiposCita() : Promise.resolve(),
+                    idCitaRecibo ? fetchCitaRecibo() : Promise.resolve(),
+                ]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (idCita || idCitaRecibo) void cargarDatos();
     }, [idCitaRecibo, idCita]);
 
     const fetchCitaRecibo = async () => {
@@ -83,24 +104,76 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCitaRecibo, isRead
         }
     };
 
-    const fetchMontoBase = async () => {
+    const fetchTiposCita = async () => {
         try {
             if (!idCita) return;
-            const response = await api.get<number>(`/Citas/MontoBase/${idCita}`);
-            console.log('Monto base obtenido:', response.data);
-            setCitaRecibo(prev => ({ ...prev, montoNeto: response.data }));
-        } catch (error) {
+            const [detallesResponse, catalogoResponse] = await Promise.all([
+                api.get<TipoCitaProcesable[]>(`/Citas/DetalleTipos/${idCita}`),
+                api.get<TipoCitaCatalogo[]>('/CatalogoCita/Vigentes'),
+            ]);
+            const tiposActuales = detallesResponse.data.filter(
+                (tipo): tipo is TipoCitaProcesable & { catalogoCita: NonNullable<TipoCitaProcesable['catalogoCita']> } =>
+                    tipo.catalogoCita !== null
+            );
+            const idsSeleccionados = tiposActuales.map(tipo => tipo.catalogoCitaId);
+            const tiposPorId = new Map<number, TipoCitaProcesable>(
+                tiposActuales.map(tipo => [tipo.catalogoCitaId, tipo])
+            );
 
+            for (const tipo of catalogoResponse.data) {
+                tiposPorId.set(tipo.id, {
+                    catalogoCitaId: tipo.id,
+                    catalogoCita: {
+                        nombreCita: tipo.nombreCita,
+                        precioBase: tipo.precioBase,
+                    },
+                });
+            }
+
+            const tipos = Array.from(tiposPorId.values());
+            const montoTotal = calcularMontoTipos(tipos, idsSeleccionados);
+
+            setTiposCita(tipos);
+            setTiposCitaSeleccionados(idsSeleccionados);
+            if (!idCitaRecibo) {
+                setCitaRecibo(prev => ({ ...prev, citaId: idCita, montoNeto: montoTotal }));
+            }
+        } catch (error) {
             notifyError({
                 titulo: 'Error',
-                descripcion: 'Ocurrió un error al obtener el precio base.',
+                descripcion: 'Ocurrió un error al obtener los tipos de cita y sus precios.',
             });
         }
+    };
 
+    const calcularMontoTipos = (tipos: TipoCitaProcesable[], idsSeleccionados: number[]) =>
+        Number(tipos
+            .filter(tipo => idsSeleccionados.includes(tipo.catalogoCitaId))
+            .reduce((total, tipo) => total + (tipo.catalogoCita?.precioBase ?? 0), 0)
+            .toFixed(2));
+
+    const handleTipoCitaChange = (tipoId: number, seleccionado: boolean) => {
+        const nuevosIds = seleccionado
+            ? [...tiposCitaSeleccionados, tipoId]
+            : tiposCitaSeleccionados.filter(id => id !== tipoId);
+
+        setTiposCitaSeleccionados(nuevosIds);
+        setCitaRecibo(prev => ({
+            ...prev,
+            montoNeto: calcularMontoTipos(tiposCita, nuevosIds),
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!isReadOnly && tiposCitaSeleccionados.length === 0) {
+            nWarning({
+                titulo: 'Selecciona un tipo de cita',
+                descripcion: 'Debes seleccionar al menos un tipo para procesar la cita.',
+            });
+            return;
+        }
 
         try {
             const isEdit = Boolean(idCitaRecibo);
@@ -113,12 +186,15 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCitaRecibo, isRead
                 montoNeto: Number(citaRecibo.montoNeto) // Convertimos el string del input a número
             };
 
+            if (idCita) {
+                await api.put(`/Citas/${idCita}/tipos`, tiposCitaSeleccionados);
+            }
             await api[method](url, dataToSend);
 
             notifySuccess({ titulo: `'Cita Procesada ${dataToSend.citaId}'`, descripcion: 'Operación exitosa.' });
             onSuccess();
         } catch (err: AxiosError | any) {
-            console.log(err)
+            console.error(err)
             notifyError({
                 titulo: 'Error',
                 descripcion: 'Ocurrió un error al procesar la cita. Intente nuevamente.',
@@ -158,8 +234,88 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCitaRecibo, isRead
     return (
         <form onSubmit={handleSubmit}>
             <LoadingDental isLoading={isLoading} />
-            <div className="rounded-xl p-3">
+            <div className="mb-4">
                 <div className="mb-4 relative">
+                    {tiposCita.length > 0 && (
+                        <div className="mb-4">
+                            <label className={labelClassName}>Tipos de cita a procesar:</label>
+
+                            {/* Contenedor general condicionado por el estado de lectura o carga */}
+                            <fieldset disabled={isReadOnly || isLoading} className="space-y-3">
+
+                                {/* Combo selector para agregar nuevas citas (solo se muestra si no está en modo solo lectura) */}
+                                {!isReadOnly && (
+                                    <div className="flex gap-2">
+                                        <select
+                                            className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            defaultValue=""
+                                            onChange={(e) => {
+                                                const selectedId = Number(e.target.value);
+                                                if (selectedId) {
+                                                    // Llamamos a tu función para agregarlo (asegúrate de que acepte el ID y true para marcarlo)
+                                                    handleTipoCitaChange(selectedId, true);
+                                                    // Reseteamos el select
+                                                    e.target.value = "";
+                                                }
+                                            }}
+                                        >
+                                            <option value="" disabled>
+                                                Selecciona un tipo de cita para agregar...
+                                            </option>
+                                            {tiposCita
+                                                .filter(tipo => !tiposCitaSeleccionados.includes(tipo.catalogoCitaId))
+                                                .map(tipo => (
+                                                    <option key={tipo.catalogoCitaId} value={tipo.catalogoCitaId}>
+                                                        {tipo.catalogoCita?.nombreCita ?? 'Tipo de cita'} - {Number(tipo.catalogoCita?.precioBase ?? 0).toFixed(2)}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* Lista donde se van agregando los elementos seleccionados */}
+                                <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    {tiposCita
+                                        .filter(tipo => tiposCitaSeleccionados.includes(tipo.catalogoCitaId))
+                                        .map(tipo => (
+                                            <div
+                                                key={tipo.catalogoCitaId}
+                                                className="flex items-center justify-between gap-3 rounded-md bg-white p-2.5 border border-gray-200 text-sm text-gray-700 shadow-sm"
+                                            >
+                                                <span className="font-medium">
+                                                    {tipo.catalogoCita?.nombreCita ?? 'Tipo de cita'}
+                                                </span>
+
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-gray-600">
+                                                       Base: {Number(tipo.catalogoCita?.precioBase ?? 0).toFixed(2)}
+                                                    </span>
+
+                                                    {/* Botón para eliminar de la lista (oculto en modo solo lectura) */}
+                                                    {!isReadOnly && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleTipoCitaChange(tipo.catalogoCitaId, false)}
+                                                            className="text-red-500 hover:text-red-700 font-semibold text-xs px-2 py-1 rounded hover:bg-red-50 transition-colors"
+                                                            title="Eliminar"
+                                                        >
+                                                            ✕ Quitar
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                    {/* Mensaje en caso de que no haya elementos seleccionados */}
+                                    {tiposCitaSeleccionados.length === 0 && (
+                                        <p className="text-sm text-gray-500 text-center py-2">
+                                            No hay tipos de cita seleccionados.
+                                        </p>
+                                    )}
+                                </div>
+                            </fieldset>
+                        </div>
+                    )}
                     <label className={labelClassName}>Ingreso:</label>
 
                     <div className="flex items-center gap-2">
@@ -259,11 +415,12 @@ export default function ReciboCitaForm({ onSuccess, idCita, idCitaRecibo, isRead
                     </div>
                 </div>
 
-                {Number(idCita) > 0 && (
+                {Number(idCita) > 0 && !isReadOnly && (
                     <button type='submit' className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
                         Guardar Ingreso
                     </button>
                 )}
+
             </div>
         </form>
     );
