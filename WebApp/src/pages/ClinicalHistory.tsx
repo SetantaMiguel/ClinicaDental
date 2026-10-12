@@ -267,7 +267,7 @@ export default function ClinicalHistory() {
                                                         <span className="text-sm font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Cita #{item.id}</span>
                                                         <span className="text-sm text-slate-500">{item.fechaInicio}</span>
                                                     </div>
-                                                    <h3 className="text-base font-bold text-slate-900">{item.tipoCitaNombre}</h3>
+                                                    <h3 className="text-base font-bold text-slate-900">{item.tiposCita?.map((tipo) => tipo.tipoCitaNombre).join(', ')}</h3>
                                                 </div>
                                                 <div className="text-right">
                                                     <span className={`inline-flex items-center ${obtenerColorEstado(item.estadoCitaCodigo)} text-xs
