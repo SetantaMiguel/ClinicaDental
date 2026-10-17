@@ -180,17 +180,17 @@ export default function CitasResumen() {
         </button>    */}
 
         <button 
-          className="flex w-25 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group" 
+          className="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group" 
           onClick={() => getCitas()} 
         >
+          <span className="mr-2"><Search size={16} /></span>
           <span className="font-semibold text-slate-700">Buscar</span>
-          <span className="pl-2 inline-block"><Search size={16} strokeWidth={2.5} /></span>
         </button>
 
         <div>
           {/* Popover para filtros de búsqueda */}
           <Popover 
-            classChild="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group font-semibold text-slate-700"
+            classChild="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group font-semibold text-slate-700"
             children={
               <div className="text-sm text-slate-600">
                 <FormFilterCita ApplyFilters={applyFilters} filtroActual={filtroCita} onCancel={clearFilters} />

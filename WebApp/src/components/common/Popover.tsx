@@ -16,10 +16,11 @@ export default function Popover({  children, isOpen, onToggle,classChild }: Popo
             <button
                 className={classChild}
                 onClick={onToggle} 
-            > Filtros
-                <span className="pl-2 inline-block">
+            > 
+                <span className="mr-2 inline-block">
                     <Funnel size={16} strokeWidth={2.5} />
                 </span>
+                Filtros
             </button>
 
             {isOpen && (

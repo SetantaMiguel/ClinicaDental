@@ -144,7 +144,7 @@ export default function ClinicalOverviewPanel() {
                         {/* Tarjeta 1: Pacientes */}
                         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
                             <div className="flex justify-between items-start mb-4">
-                                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Pacientes Atendidos</h3>
+                                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Pacientes Registrados</h3>
                                 <div className="p-2 bg-blue-50 rounded-lg">
                                     <Users className="w-5 h-5 text-blue-600" />
                                 </div>

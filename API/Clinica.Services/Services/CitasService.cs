@@ -15,7 +15,7 @@ namespace Clinica.Services.Services
 
             return new PageResponse<CitaResumenDTO>
             {
-                Data = await _context.Citas.Where(c => c.FechaInicio >= DateTime.UtcNow).OrderBy(c => c.FechaInicio).Take(5).Select(c => new CitaResumenDTO
+                Data = await _context.Citas.Where(c => c.FechaFin >= DateTime.UtcNow).OrderBy(c => c.FechaInicio).Take(5).Select(c => new CitaResumenDTO
                 {
                     Id = c.Id,
                     PacienteId = c.PacienteId,

@@ -94,7 +94,7 @@ export default function FormPatient({ OnSuccess, idPaciente }: FormPatientProps)
     return (
         <form
             onSubmit={handleSubmit}
-            className="w-full max-w-lg bg-white p-8 rounded-2xl transition-all"
+            className="w-full max-w-lg bg-white p-8 rounded-2xl  transition-all"
         >
             {/* Encabezado del Formulario */}
             <div className="mb-6 pb-4 border-b border-gray-100">

@@ -98,13 +98,13 @@ export default function PacientesPage() {
       header: 'Acciones',
       key: 'acciones',
       render: (p: Paciente) => (
-        <> 
+        <div className="flex space-between gap-2"> 
           <button className="text-blue-600 hover:text-blue-800 font-medium" onClick={() => handleOpenModal(p.id)}><UserPen /></button>
-          <button className="ml-4 text-green-600 hover:text-green-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><CalendarClock /></button>
-          <NavLink className="ml-4 text-green-600 hover:text-green-800 font-medium" to={`/historialClinico/${p.id}`}>
+          <button className=" text-green-600 hover:text-green-800 font-medium" onClick={() => handleOpenModalCita(p.id)}><CalendarClock /></button>
+          <NavLink className="text-green-600 hover:text-green-800 font-medium" to={`/historialClinico/${p.id}`}>
             <BookUser />
           </NavLink>
-        </>
+        </div>
       )
     },
   ];
@@ -153,18 +153,18 @@ export default function PacientesPage() {
 
       <h1 className="text-2xl font-bold text-gray-800 ">Gestión de Pacientes</h1>
       <div className='flex p-2'>
-        <button className="flex w-50  items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
+        <button className="flex w-50 items-center justify-between p-2 bg-white border border-slate-200 rounded-xl
           hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group"
           onClick={() => handleOpenModal()}>
           <div className="flex items-center gap-3">
-            <div className="text-blue-600"><UserRoundPlus className="w-5 h-5" /></div>
+            <div ><UserRoundPlus className="w-5 h-5" /></div>
             <span className="font-semibold text-slate-700">Nuevo Paciente</span>
           </div>
           <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
         </button>   
 
         <div>
-          <Popover classChild="flex w-25 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
+          <Popover classChild="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
           hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group font-semibold text-slate-700"
             children={<FormFilterPatient ApplyFilters={getPacientes} filtroActual={filtroPaciente}
               onCancel={clearFilters} />}

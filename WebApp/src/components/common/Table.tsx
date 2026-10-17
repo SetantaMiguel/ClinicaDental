@@ -1,5 +1,3 @@
-import {useState} from 'react';
-import CustomSwitch from './Switch.tsx';
 import type { PagePrompt } from '../../types/index.ts';
 
 interface Column<T> {
@@ -19,7 +17,6 @@ interface TableProps<T> {
 
 export default function Table<T>({ columns, data, isLoading, PagePromts, onPageChange }: TableProps<T>) {
     const totalPages = PagePromts.TotalRecords && PagePromts.pageSize ? Math.ceil(PagePromts.TotalRecords / PagePromts.pageSize) : 0;
-    const [showInfoPage,setShowInfoPage] = useState(true);
 
     const SiguientePagina = () => {
         const currentPage = PagePromts.pageNumber < totalPages ? PagePromts.pageNumber + 1 : PagePromts.pageNumber;
@@ -30,9 +27,8 @@ export default function Table<T>({ columns, data, isLoading, PagePromts, onPageC
         onPageChange(currentPage);
     }
     return (
-<div className="w-full overflow-x-auto rounded-xl border border-gray-200 shadow-sm" style={{ minHeight: 850, maxHeight: 850, overflowY: 'auto' }}>           
-     <div className="flex justify-end p-4">
-                <CustomSwitch label='Info' enabled={showInfoPage} onChange={setShowInfoPage} />                
+        <div className="w-full overflow-x-auto rounded-xl border border-gray-200 shadow-sm" style={{ minHeight: 850, maxHeight: 850, overflowY: 'auto' }}>
+            <div className="flex justify-end p-4">
             </div>
             <table className="w-full text-left border-collapse bg-white">
                 <thead className="bg-gray-50 border-b border-gray-200">
@@ -46,17 +42,17 @@ export default function Table<T>({ columns, data, isLoading, PagePromts, onPageC
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                     {isLoading ? (
-                                /* --- SKELETON LOADER MODERNO --- */
-                                /* Generamos 8 filas falsas animadas que mantienen la estructura de la tabla */
-                                Array.from({ length: 10 }).map((_, rowIndex) => (
-                                    <tr key={rowIndex} className="animate-pulse">
-                                        {columns.map((_, colIndex) => (
-                                            <td key={colIndex} className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
-                                                <div className="h-4 bg-gray-200/80 rounded-md w-3/4"></div>
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))
+                        /* --- SKELETON LOADER MODERNO --- */
+                        /* Generamos 8 filas falsas animadas que mantienen la estructura de la tabla */
+                        Array.from({ length: 10 }).map((_, rowIndex) => (
+                            <tr key={rowIndex} className="animate-pulse">
+                                {columns.map((_, colIndex) => (
+                                    <td key={colIndex} className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
+                                        <div className="h-4 bg-gray-200/80 rounded-md w-3/4"></div>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))
                     ) : data.length === 0 ? (
                         <tr><td colSpan={columns.length} className="p-10 text-center text-gray-400">No hay datos disponibles</td></tr>
                     ) : (
@@ -74,9 +70,9 @@ export default function Table<T>({ columns, data, isLoading, PagePromts, onPageC
             </table>
             {PagePromts.TotalRecords !== undefined && PagePromts.pageSize !== undefined && PagePromts.pageNumber !== undefined && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-600">
-                        Mostrando página <b>{PagePromts.pageNumber}</b> de <b>{Math.ceil(PagePromts.TotalRecords / PagePromts.pageSize)} </b> 
-                                  {showInfoPage && <span>- Total de registros: <b>{PagePromts.TotalRecords}</b> - Mostrando: {PagePromts.pageSize}</span>}
-                   <div className="flex justify-center mt-2">
+                    Mostrando página <b>{PagePromts.pageNumber}</b> de <b>{Math.ceil(PagePromts.TotalRecords / PagePromts.pageSize)} </b>
+                    <span>- Total de registros: <b>{PagePromts.TotalRecords}</b> - Mostrando: {PagePromts.pageSize}</span>
+                    <div className="flex justify-center mt-2">
                         <button
                             className={`text-white ml-4 px-3 py-1 rounded-lg transition
                                 ${PagePromts.pageNumber <= 1
@@ -87,7 +83,7 @@ export default function Table<T>({ columns, data, isLoading, PagePromts, onPageC
                             Anterior
                         </button>
                         <button className="ml-4 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                            Actual 
+                            Actual
                         </button>
                         <button
                             className={`ml-4 px-3 py-1 text-white  rounded-lg transition

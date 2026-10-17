@@ -39,12 +39,21 @@ const formatearFecha = (date: Date) => {
 };
 
 const formatearHora = (date: Date) => {
-  const hours = String(date.getHours()).padStart(2, '0');
+  let hours = date.getHours();
   const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  // Determinamos si es AM o PM
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  
+  // Convertimos al formato de 12 horas
+  hours = hours % 12;
+  hours = hours ? hours : 12; // La medianoche (0) se convierte en 12
+  
+  // Formateamos para que siempre tenga 2 dígitos (opcional, ej: "02:30 PM")
+  const hoursStr = String(hours).padStart(2, '0');
 
-  return `${hours}:${minutes}`;
+  return `${hoursStr}:${minutes} ${ampm}`;
 };
-
 
 export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormAppointmentProps) {
   const { success, error } = useNotify();
@@ -218,7 +227,7 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
   const labelClassName = "mb-1.5 block text-sm font-medium text-gray-700";
 
   return (
-    <div className="mx-auto w-full max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="mx-auto w-full rounded-xl bg-white p-6 md:p-8">
       <div className="mb-8 flex flex-col gap-4 border-b border-gray-100 pb-5 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
@@ -333,11 +342,11 @@ export default function FormAppointment({ OnSuccess, idPaciente, idCita }: FormA
                 </div>
                 <div className="grid grid-cols-3 gap-4 px-5 py-4 bg-gray-50/50">
                   <dt className="font-medium text-gray-500">Horario de inicio</dt>
-                  <dd className="col-span-2 text-gray-900">{cita.fechaInicio} a las {cita.horaInicio}</dd>
+                  <dd className="col-span-2 text-gray-900 font-semibold">{cita.fechaInicio} a las {cita.horaInicio}</dd>
                 </div>
                 <div className="grid grid-cols-3 gap-4 px-5 py-4">
                   <dt className="font-medium text-gray-500">Horario de fin</dt>
-                  <dd className="col-span-2 text-gray-900">{cita.fechaFin} a las {cita.horaFin}</dd>
+                  <dd className="col-span-2 text-gray-900 font-semibold">{cita.fechaFin} a las {cita.horaFin}</dd>
                 </div>
                 {cita.observaciones && (
                   <div className="grid grid-cols-3 gap-4 px-5 py-4 bg-gray-50/50">

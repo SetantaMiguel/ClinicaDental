@@ -115,11 +115,11 @@ export default function CalendarioCitas() {
 
   return (
     <div className="h-[80vh] font-sans antialiased text-gray-900 relative">
-      <button className="flex w-50 mb-2 items-center justify-between p-2 bg-white border border-slate-200 rounded-3xl
+      <button className="flex w-50 mb-2 items-center justify-between p-2 bg-white border border-slate-200 rounded-xl
          hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group"
         onClick={() => setIsFormCitaNuevoOpen(true)}>
         <div className="flex items-center gap-3">
-          <div className="text-blue-600"><Plus className="w-5 h-5" /></div>
+          <div ><Plus className="w-5 h-5" /></div>
           <span className="font-semibold text-slate-700">Nueva Cita</span>
         </div>
         <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />

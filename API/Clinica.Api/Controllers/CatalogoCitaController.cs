@@ -1,3 +1,4 @@
+using Clinica.Core.DTOs.Filters;
 using Clinica.Core.Models;
 using Clinica.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +13,10 @@ namespace Clinica.Api.Controllers
     {
         private readonly ICatalogoCitaService _Service = service;
 
-        [HttpGet()]
-        public async Task<ActionResult<IEnumerable<CatalogoCitas>>> GetCatalogo()
+        [HttpGet]
+        public async Task<ActionResult<PageResponse<CatalogoCitas>>> GetCatalogo([FromQuery] CatalogoDeCitaDto filtro)
         {
-            var resp = await _Service.GetAllOrderedAsync(nameof(CatalogoCitas.Id),false);
+            var resp = await _Service.ObtenerTodos(filtro);
             return Ok(resp);
         }        
         
