@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import api from '../../api/axiosConfig';
+import TipoCitaSelect from '../CombosBox/TipoCitaComboBoxUnico.tsx';
 
 export interface CitaFiltro {
   FechaDesde?: string;
@@ -9,10 +9,6 @@ export interface CitaFiltro {
   TipoCitaId?: number;
 }
 
-interface TipoCitaOption {
-  id: number;
-  nombreCita: string;
-}
 
 interface FormFilterCitaProps {
   ApplyFilters: (filtro: CitaFiltro) => void;
@@ -32,29 +28,16 @@ export default function FormFilterCita({ ApplyFilters, filtroActual, onCancel }:
   const [fechaHasta, setFechaHasta] = useState(filtroActual.FechaHasta ?? '');
   const [pacienteNombre, setPacienteNombre] = useState(filtroActual.PacienteNombre ?? '');
   const [estadoCitaCodigo, setEstadoCitaCodigo] = useState(filtroActual.EstadoCitaCodigo ?? '');
-  const [tipoCitaId, setTipoCitaId] = useState(filtroActual.TipoCitaId?.toString() ?? '');
-  const [tiposCita, setTiposCita] = useState<TipoCitaOption[]>([]);
+  const [tipoCitaId, setTipoCitaId] = useState(filtroActual.TipoCitaId ?? 0);
 
   useEffect(() => {
     setFechaDesde(filtroActual.FechaDesde ?? '');
     setFechaHasta(filtroActual.FechaHasta ?? '');
     setPacienteNombre(filtroActual.PacienteNombre ?? '');
     setEstadoCitaCodigo(filtroActual.EstadoCitaCodigo ?? '');
-    setTipoCitaId(filtroActual.TipoCitaId?.toString() ?? '');
+    setTipoCitaId(filtroActual.TipoCitaId ?? 0);
   }, [filtroActual]);
 
-  useEffect(() => {
-    const cargarTiposCita = async () => {
-      try {
-        const response = await api.get('/CatalogoCita/Vigentes');
-        setTiposCita(response.data);
-      } catch (error) {
-        console.error('Error al cargar tipos de cita:', error);
-      }
-    };
-
-    cargarTiposCita();
-  }, []);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -91,18 +74,15 @@ export default function FormFilterCita({ ApplyFilters, filtroActual, onCancel }:
         <select id="cita-estado" className={inputClassName} value={estadoCitaCodigo}
           onChange={(event) => setEstadoCitaCodigo(event.target.value)}>
           <option value="">Todos los estados</option>
-          {estadosCita.map((estado) => <option key={estado.codigo} value={estado.codigo}>{estado.descripcion}</option>)}
+          {estadosCita.map((estado) => <option key={estado.codigo} value={estado.codigo} >
+            {estado.descripcion}
+          </option>)}
         </select>
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="cita-tipo">Tipo de cita</label>
-        <select id="cita-tipo" className={inputClassName} value={tipoCitaId}
-          onChange={(event) => setTipoCitaId(event.target.value)}>
-          <option value="">Todos los tipos</option>
-          {tiposCita.map((tipo) => <option key={tipo.id} value={tipo.id}>{tipo.nombreCita}</option>)}
-        </select>
+        <TipoCitaSelect value={tipoCitaId} onChange={setTipoCitaId} />
       </div>
-      <div className="flex justify-end gap-2 pt-1">
+      <div className="flex justify-end gap-2 pt-1"> 
         <button type="button" onClick={onCancel} className="rounded px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100">
           Limpiar
         </button>

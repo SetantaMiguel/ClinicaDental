@@ -11,6 +11,9 @@ import type { CitaApiResponse, CitaEvent } from '../../../types/index'
 import { useNotify } from '../../Context/NotifyContext';
 import FormAppointment from '../../Forms/FormAppointment';
 import { DetalleCitaCard } from './DetalleCitaCard';
+import FormFilterCita from '../../Forms/FormFilterCita';
+import type { CitaFiltro } from '../../Forms/FormFilterCita.tsx';
+import Popover from '../../common/Popover.tsx';
 
 dayjs.locale('es');
 
@@ -25,10 +28,28 @@ export default function CalendarioCitas() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormCitaNuevoOpen, setIsFormCitaNuevoOpen] = useState(false);
 
-  const cargarCitas = async () => {
+  // Estados para Filtros
+  const [showFilter, setShowFilter] = useState(false);
+  const [filtroCita, setFiltroCita] = useState<CitaFiltro>({});
+
+  const cargarCitas = async (filtro?: CitaFiltro, esLimpieza: boolean = false) => {
     setIsLoading(true);
     try {
-      const response = await api.get('/Citas');
+      const filtroUsar = esLimpieza
+        ? {}
+        : (filtro
+          ? { ...filtroCita, ...filtro }
+          : filtroCita);
+      const response = await api.get(`/Citas`, {
+        params: {
+          fechaDesde: filtroUsar.FechaDesde ?? null,
+          fechaHasta: filtroUsar.FechaHasta ?? null,
+          pacienteNombre: filtroUsar.PacienteNombre ?? null,
+          estadoCitaCodigo: filtroUsar.EstadoCitaCodigo ?? null,
+          tipoCitaId: filtroUsar.TipoCitaId ?? null
+        },
+      });
+
       const citas = response.data.data as CitaApiResponse[];
       //onsole.log('Cargando cita:', citas);
 
@@ -42,7 +63,7 @@ export default function CalendarioCitas() {
           start,
           end,
           pacienteId: cita.pacienteId,
-          tiposCita : cita.tiposCita ?? (cita.tiposCita ? [cita.tiposCita] : []),
+          tiposCita: cita.tiposCita ?? (cita.tiposCita ? [cita.tiposCita] : []),
           observaciones: cita.observaciones,
           pacienteNombre,
           estadoCitaCodigo: cita.estadoCitaCodigo,
@@ -113,18 +134,41 @@ export default function CalendarioCitas() {
     },
   }), []);
 
+  const applyFilters = (filtro: CitaFiltro) => {
+    setFiltroCita(filtro);
+    cargarCitas(filtro,false);
+    setShowFilter(false);
+  };
+
+  const clearFilters = () => {
+    setFiltroCita({});
+    cargarCitas({},true);
+    setShowFilter(false);
+  };
+
   return (
     <div className="h-[80vh] font-sans antialiased text-gray-900 relative">
-      <button className="flex w-50 mb-2 items-center justify-between p-2 bg-white border border-slate-200 rounded-xl
+      <div className="flex items-center mb-2 gap-2">
+        <button className="flex w-50  items-center justify-between p-2 bg-white border border-slate-200 rounded-xl
          hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group"
-        onClick={() => setIsFormCitaNuevoOpen(true)}>
-        <div className="flex items-center gap-3">
-          <div ><Plus className="w-5 h-5" /></div>
-          <span className="font-semibold text-slate-700">Nueva Cita</span>
-        </div>
-        <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
-      </button>
-
+          onClick={() => setIsFormCitaNuevoOpen(true)}>
+          <div className="flex items-center gap-3">
+            <div ><Plus className="w-5 h-5" /></div>
+            <span className="font-semibold text-slate-700">Nueva Cita</span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600" />
+        </button>
+        <Popover
+          classChild="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all group font-semibold text-slate-700"
+          children={
+            <div className="text-sm text-slate-600">
+              <FormFilterCita ApplyFilters={applyFilters} filtroActual={filtroCita} onCancel={clearFilters} />
+            </div>
+          }
+          isOpen={showFilter}
+          onToggle={() => setShowFilter(!showFilter)}
+        />
+      </div>
       {isLoading && (
         <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
           <span className="text-blue-600 font-semibold animate-pulse">Cargando citas...</span>

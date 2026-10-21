@@ -60,6 +60,7 @@ namespace Clinica.Api.Controllers
                 return NotFound();
             }
 
+#pragma warning disable CS8603 // Possible null reference return.
             var citasTipos = await _citaDetalleCatalogoService.GetFilteredAndOrderedAsync(ct => ct.CitaId == id
                 , nameof(CitaDetalleCatalogo.CatalogoCitaId)
                 , true
@@ -68,6 +69,7 @@ namespace Clinica.Api.Controllers
                     x => x.CatalogoCita
                 ]
             );
+#pragma warning restore CS8603 // Possible null reference return.
 
             foreach (var tipo in citasTipos)
             {
@@ -90,6 +92,7 @@ namespace Clinica.Api.Controllers
                 return NotFound();
             }
 
+#pragma warning disable CS8603 // Possible null reference return.
             var citasTipos = await _citaDetalleCatalogoService.GetFilteredAndOrderedAsync(ct => ct.CitaId == id
                 , nameof(CitaDetalleCatalogo.CatalogoCitaId)
                 , true
@@ -98,6 +101,7 @@ namespace Clinica.Api.Controllers
                     x => x.CatalogoCita
                 ]
             );
+#pragma warning restore CS8603 // Possible null reference return.
 
             return Ok(citasTipos.Count > 0 ? citasTipos : []);
         }
